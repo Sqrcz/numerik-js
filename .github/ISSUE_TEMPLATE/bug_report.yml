@@ -1,0 +1,53 @@
+name: Bug Report
+description: Report incorrect validation results or unexpected behaviour.
+labels: ["type: bug", "status: needs-triage"]
+body:
+  - type: input
+    id: version
+    attributes:
+      label: Package version
+      placeholder: "0.1.0"
+    validations:
+      required: true
+
+  - type: input
+    id: identifier
+    attributes:
+      label: Affected identifier
+      placeholder: "PESEL, NIP, REGON, …"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: Include the input value and the result you got.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      render: typescript
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behaviour
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      placeholder: |
+        Node.js version:
+        Runtime (Node / Bun / Deno / browser):
+        TypeScript version:
+    validations:
+      required: true

@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security Vulnerability
+    url: https://github.com/sqrcz/numerik-js/security/advisories/new
+    about: Please report security vulnerabilities privately via GitHub's advisory system.
+  - name: Ask a question
+    url: https://github.com/sqrcz/numerik-js/discussions
+    about: Use GitHub Discussions for questions and general help.

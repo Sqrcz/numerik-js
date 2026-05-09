@@ -1,0 +1,33 @@
+# Dependencies
+/node_modules/
+
+# Build output
+/dist/
+
+# Docs build output
+/docs/.astro/
+/docs/dist/
+/docs/node_modules/
+
+# Coverage reports
+/coverage/
+
+# TypeScript
+*.tsbuildinfo
+
+# Environment
+.env
+.env.backup
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDEs
+*.swo
+*.swp
+/.idea/
+/.vscode/
+
+# Internal
+/.scratch/
