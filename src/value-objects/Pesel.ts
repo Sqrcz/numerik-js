@@ -5,10 +5,14 @@ export class Pesel implements IdentifierInterface {
   constructor(
     private readonly raw: string,
     private readonly normalized: string,
-    private readonly birthDate: Date,
+    birthDate: Date,
     private readonly gender: Gender,
     private readonly ordinalNumber: number,
-  ) {}
+  ) {
+    this.birthDate = new Date(birthDate.getTime())
+  }
+
+  private readonly birthDate: Date
 
   getRaw(): string {
     return this.raw
