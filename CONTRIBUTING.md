@@ -11,10 +11,12 @@ pnpm install
 ## Running Checks
 
 ```bash
-pnpm check        # typecheck + tests
+pnpm check        # typecheck + lint + tests
 pnpm test         # test suite only
 pnpm test:watch   # tests in watch mode
 pnpm test:cover   # tests with coverage
+pnpm lint         # Biome lint + format check
+pnpm lint:fix     # Biome lint + format, auto-fix
 pnpm build        # compile to dist/
 ```
 
