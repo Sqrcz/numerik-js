@@ -83,8 +83,9 @@ export class IdCardIdentifier implements ValidatorInterface, ParserInterface {
   tryParse(input: string): IdCard | null {
     try {
       return this.parse(input)
-    } catch {
-      return null
+    } catch (err) {
+      if (err instanceof ValidationException) return null
+      throw err
     }
   }
 
