@@ -14,6 +14,7 @@ describe('NrbIdentifier — validate()', () => {
       ['with spaces', '61 1020 1026 0000 0000 0000 0000'],
       ['IBAN format (PL prefix stripped)', 'PL61102010260000000000000000'],
       ['IBAN with spaces', 'PL61 1020 1026 0000 0000 0000 0000'],
+      ['hyphenated NRB', '61-1020-1026-0000-0000-0000-0000'],
       ['different sort code', '19109020040000000000000000'],
       ['non-zero account', '54102010261234567890123456'],
     ]
