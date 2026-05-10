@@ -88,7 +88,7 @@ describe('PeselIdentifier — validate()', () => {
 
   describe('strict mode — future date', () => {
     it('fails for future date in strict mode', () => {
-      const result = peselStrict(true).validate('30210100018')
+      const result = peselStrict(true).validate('00652001248')
       expect(result.isFailed()).toBe(true)
       expect(result.hasFailureReason(ValidationFailureReason.FutureDate)).toBe(
         true,
@@ -96,7 +96,7 @@ describe('PeselIdentifier — validate()', () => {
     })
 
     it('passes for future date in non-strict mode', () => {
-      const result = peselStrict(false).validate('30210100018')
+      const result = peselStrict(false).validate('00652001248')
       expect(result.isValid).toBe(true)
     })
   })
@@ -227,8 +227,8 @@ describe('PeselIdentifier — parse()', () => {
 
     it('correct for future date in non-strict mode', () => {
       expect(
-        formatDate(peselStrict(false).parse('30210100018').getBirthDate()),
-      ).toBe('2030-01-01')
+        formatDate(peselStrict(false).parse('00652001248').getBirthDate()),
+      ).toBe('2200-05-20')
     })
   })
 
@@ -336,13 +336,13 @@ describe('PeselIdentifier — parse() exceptions', () => {
   })
 
   it('throws ValidationException for future date in strict mode', () => {
-    expect(() => peselStrict(true).parse('30210100018')).toThrow(
+    expect(() => peselStrict(true).parse('00652001248')).toThrow(
       ValidationException,
     )
   })
 
   it('succeeds for future date in non-strict mode', () => {
-    expect(() => peselStrict(false).parse('30210100018')).not.toThrow()
+    expect(() => peselStrict(false).parse('00652001248')).not.toThrow()
   })
 })
 
