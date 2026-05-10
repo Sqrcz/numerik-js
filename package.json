@@ -39,9 +39,9 @@
     "test:watch": "vitest",
     "test:cover": "vitest run --coverage",
     "typecheck": "tsc --noEmit",
-    "lint": "biome check src",
-    "lint:fix": "biome check --write src",
-    "format": "biome format --write src",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "format": "biome format --write .",
     "check": "pnpm typecheck && pnpm lint && pnpm test"
   },
   "keywords": [
