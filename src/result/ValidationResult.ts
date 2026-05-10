@@ -2,10 +2,13 @@ import type { ValidationFailureReason } from '../enums/ValidationFailureReason.j
 import { ValidationFailure } from './ValidationFailure.js'
 
 export class ValidationResult {
-  constructor(
-    public readonly isValid: boolean,
-    public readonly failures: ValidationFailure[] = [],
-  ) {}
+  public readonly isValid: boolean
+  public readonly failures: readonly ValidationFailure[]
+
+  constructor(isValid: boolean, failures: ValidationFailure[] = []) {
+    this.isValid = isValid
+    this.failures = [...failures]
+  }
 
   static pass(): ValidationResult {
     return new ValidationResult(true)
@@ -26,7 +29,7 @@ export class ValidationResult {
     return !this.isValid
   }
 
-  getFailures(): ValidationFailure[] {
+  getFailures(): readonly ValidationFailure[] {
     return this.failures
   }
 
