@@ -80,6 +80,12 @@
     "vat-eu"
   ],
   "license": "MIT",
+  "engines": {
+    "node": ">=22"
+  },
+  "volta": {
+    "node": "22"
+  },
   "pnpm": {
     "onlyBuiltDependencies": [
       "esbuild"
