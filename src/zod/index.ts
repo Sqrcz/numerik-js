@@ -20,137 +20,55 @@ function refine(identifier: ValidatorInterface) {
   }
 }
 
-// Personal — PESEL
-
-export const peselSchema = (strict = true) => {
-  const id = Numerik.pesel(strict)
-  return z.string().superRefine(refine(id))
+function makeIdSchemas<T>(
+  factory: (
+    strict: boolean,
+  ) => ValidatorInterface & { parse(input: string): T },
+) {
+  return {
+    schema: (strict = true) => {
+      const id = factory(strict)
+      return z.string().superRefine(refine(id))
+    },
+    parseSchema: (strict = true) => {
+      const id = factory(strict)
+      return z
+        .string()
+        .superRefine(refine(id))
+        .transform((val): T => id.parse(val))
+    },
+  }
 }
 
-export const peselParseSchema = (strict = true) => {
-  const id = Numerik.pesel(strict)
-  return z
-    .string()
-    .superRefine(refine(id))
-    .transform((val): Pesel => id.parse(val))
-}
+// Personal
 
-// Personal — ID Card
+export const { schema: peselSchema, parseSchema: peselParseSchema } =
+  makeIdSchemas<Pesel>((strict) => Numerik.pesel(strict))
 
-export const idCardSchema = (strict = true) => {
-  const id = Numerik.idCard(strict)
-  return z.string().superRefine(refine(id))
-}
+export const { schema: idCardSchema, parseSchema: idCardParseSchema } =
+  makeIdSchemas<IdCard>((strict) => Numerik.idCard(strict))
 
-export const idCardParseSchema = (strict = true) => {
-  const id = Numerik.idCard(strict)
-  return z
-    .string()
-    .superRefine(refine(id))
-    .transform((val): IdCard => id.parse(val))
-}
+export const { schema: passportSchema, parseSchema: passportParseSchema } =
+  makeIdSchemas<Passport>((strict) => Numerik.passport(strict))
 
-// Personal — Passport
+// Tax & Business
 
-export const passportSchema = (strict = true) => {
-  const id = Numerik.passport(strict)
-  return z.string().superRefine(refine(id))
-}
+export const { schema: nipSchema, parseSchema: nipParseSchema } =
+  makeIdSchemas<Nip>((strict) => Numerik.nip(strict))
 
-export const passportParseSchema = (strict = true) => {
-  const id = Numerik.passport(strict)
-  return z
-    .string()
-    .superRefine(refine(id))
-    .transform((val): Passport => id.parse(val))
-}
+export const { schema: vatEuSchema, parseSchema: vatEuParseSchema } =
+  makeIdSchemas<VatEu>((strict) => Numerik.vatEu(strict))
 
-// Tax & Business — NIP
+export const { schema: regonSchema, parseSchema: regonParseSchema } =
+  makeIdSchemas<Regon>((strict) => Numerik.regon(strict))
 
-export const nipSchema = (strict = true) => {
-  const id = Numerik.nip(strict)
-  return z.string().superRefine(refine(id))
-}
+export const { schema: krsSchema, parseSchema: krsParseSchema } =
+  makeIdSchemas<Krs>((strict) => Numerik.krs(strict))
 
-export const nipParseSchema = (strict = true) => {
-  const id = Numerik.nip(strict)
-  return z
-    .string()
-    .superRefine(refine(id))
-    .transform((val): Nip => id.parse(val))
-}
+// Banking
 
-// Tax & Business — VAT-EU
+export const { schema: nrbSchema, parseSchema: nrbParseSchema } =
+  makeIdSchemas<Nrb>((strict) => Numerik.nrb(strict))
 
-export const vatEuSchema = (strict = true) => {
-  const id = Numerik.vatEu(strict)
-  return z.string().superRefine(refine(id))
-}
-
-export const vatEuParseSchema = (strict = true) => {
-  const id = Numerik.vatEu(strict)
-  return z
-    .string()
-    .superRefine(refine(id))
-    .transform((val): VatEu => id.parse(val))
-}
-
-// Tax & Business — REGON
-
-export const regonSchema = (strict = true) => {
-  const id = Numerik.regon(strict)
-  return z.string().superRefine(refine(id))
-}
-
-export const regonParseSchema = (strict = true) => {
-  const id = Numerik.regon(strict)
-  return z
-    .string()
-    .superRefine(refine(id))
-    .transform((val): Regon => id.parse(val))
-}
-
-// Tax & Business — KRS
-
-export const krsSchema = (strict = true) => {
-  const id = Numerik.krs(strict)
-  return z.string().superRefine(refine(id))
-}
-
-export const krsParseSchema = (strict = true) => {
-  const id = Numerik.krs(strict)
-  return z
-    .string()
-    .superRefine(refine(id))
-    .transform((val): Krs => id.parse(val))
-}
-
-// Banking — NRB
-
-export const nrbSchema = (strict = true) => {
-  const id = Numerik.nrb(strict)
-  return z.string().superRefine(refine(id))
-}
-
-export const nrbParseSchema = (strict = true) => {
-  const id = Numerik.nrb(strict)
-  return z
-    .string()
-    .superRefine(refine(id))
-    .transform((val): Nrb => id.parse(val))
-}
-
-// Banking — IBAN
-
-export const ibanSchema = (strict = true) => {
-  const id = Numerik.iban(strict)
-  return z.string().superRefine(refine(id))
-}
-
-export const ibanParseSchema = (strict = true) => {
-  const id = Numerik.iban(strict)
-  return z
-    .string()
-    .superRefine(refine(id))
-    .transform((val): Iban => id.parse(val))
-}
+export const { schema: ibanSchema, parseSchema: ibanParseSchema } =
+  makeIdSchemas<Iban>((strict) => Numerik.iban(strict))
