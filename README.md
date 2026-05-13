@@ -1,6 +1,6 @@
 # numerik-js
 
-[![Tests](https://github.com/sqrcz/numerik-js/actions/workflows/ci.yml/badge.svg)](https://github.com/sqrcz/numerik-js/actions/workflows/ci.yml)
+[![Tests](https://github.com/sqrcz/numerik-js/actions/workflows/tests.yml/badge.svg)](https://github.com/sqrcz/numerik-js/actions/workflows/tests.yml)
 [![npm](https://img.shields.io/npm/v/@slashlab/numerik-js.svg)](https://www.npmjs.com/package/@slashlab/numerik-js)
 [![npm downloads](https://img.shields.io/npm/dm/@slashlab/numerik-js.svg)](https://www.npmjs.com/package/@slashlab/numerik-js)
 [![Bundle size](https://img.shields.io/bundlephobia/minzip/@slashlab/numerik-js)](https://bundlephobia.com/package/@slashlab/numerik-js)
