@@ -1,11 +1,11 @@
 # numerik-js
 
+[![License](https://img.shields.io/github/license/sqrcz/numerik-js.svg)](LICENSE)
 [![Tests](https://github.com/sqrcz/numerik-js/actions/workflows/tests.yml/badge.svg)](https://github.com/sqrcz/numerik-js/actions/workflows/tests.yml)
+[![CodeRabbit](https://img.shields.io/coderabbit/prs/github/sqrcz/numerik-js)](https://coderabbit.ai)
+[![Bundle size](https://img.shields.io/bundlephobia/minzip/@slashlab/numerik-js)](https://bundlephobia.com/package/@slashlab/numerik-js)
 [![npm](https://img.shields.io/npm/v/@slashlab/numerik-js.svg)](https://www.npmjs.com/package/@slashlab/numerik-js)
 [![npm downloads](https://img.shields.io/npm/dm/@slashlab/numerik-js.svg)](https://www.npmjs.com/package/@slashlab/numerik-js)
-[![Bundle size](https://img.shields.io/bundlephobia/minzip/@slashlab/numerik-js)](https://bundlephobia.com/package/@slashlab/numerik-js)
-[![License](https://img.shields.io/github/license/sqrcz/numerik-js.svg)](LICENSE)
-[![CodeRabbit](https://img.shields.io/coderabbit/prs/github/sqrcz/numerik-js)](https://coderabbit.ai)
 
 > Validate and parse Polish identification numbers — PESEL, NIP, REGON, KRS, NRB, VAT-EU, IBAN, ID Card, and Passport. Rich value objects, detailed error reasons, zero production dependencies. TypeScript-first.
 
