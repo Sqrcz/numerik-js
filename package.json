@@ -28,6 +28,24 @@
         "types": "./dist/index.d.cts",
         "default": "./dist/index.cjs"
       }
+    },
+    "./zod": {
+      "import": {
+        "types": "./dist/zod/index.d.ts",
+        "default": "./dist/zod/index.js"
+      },
+      "require": {
+        "types": "./dist/zod/index.d.cts",
+        "default": "./dist/zod/index.cjs"
+      }
+    }
+  },
+  "peerDependencies": {
+    "zod": ">=3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "zod": {
+      "optional": true
     }
   },
   "files": [
@@ -72,6 +90,7 @@
     "@vitest/coverage-v8": "^4.1.5",
     "tsup": "^8.5.1",
     "typescript": "^6.0.3",
-    "vitest": "^4.1.5"
+    "vitest": "^4.1.5",
+    "zod": "^4.4.3"
   }
 }
