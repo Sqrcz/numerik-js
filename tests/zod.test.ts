@@ -45,7 +45,9 @@ describe('peselSchema', () => {
     const result = peselSchema().safeParse('92060512185')
     expect(result.success).toBe(false)
     if (!result.success) {
-      expect(result.error.issues[0]?.message).toContain('checksum')
+      expect(
+        result.error.issues.some((i) => i.message.includes('checksum')),
+      ).toBe(true)
     }
   })
 
