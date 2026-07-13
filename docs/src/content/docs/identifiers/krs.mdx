@@ -1,0 +1,92 @@
+---
+title: KRS
+description: Validate and parse Polish KRS court register numbers with @slashlab/numerik-js.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+KRS (*Krajowy Rejestr Sądowy*) is Poland's national court register number assigned to legal entities. It is a 10-digit sequential registry number.
+
+<Aside type="caution" title="Offline validation limitation">
+KRS has no publicly documented checksum algorithm. Numerik validates **format and structure only** — it cannot verify whether a given KRS number is actually assigned in the registry. For authoritative verification, query the official [KRS registry API](https://prs.ms.gov.pl/krs/openApi).
+</Aside>
+
+## Usage
+
+```ts
+import { Numerik } from '@slashlab/numerik-js'
+
+// Boolean
+Numerik.krs().isValid('0000127206')   // true
+
+// Numbers without leading zeros are accepted and normalised
+Numerik.krs().isValid('127206')       // true
+
+// Rich result
+const result = Numerik.krs().validate('0000127206')
+result.isValid   // true
+
+// Parse to value object
+const krs = Numerik.krs().parse('0000127206')
+
+// Null on failure instead of exception
+const maybe = Numerik.krs().tryParse('bad-input') // null
+```
+
+## Value object API
+
+`parse()` and `tryParse()` return a `Krs` instance.
+
+### Core
+
+| Method | Return type | Description |
+|--------|-------------|-------------|
+| `getRaw()` | `string` | The original input, untouched. |
+| `getNormalized()` | `string` | Raw digits as provided (no extra padding stored). |
+| `toString()` | `string` | Alias for `getNormalized()`. |
+
+### Formatting & metadata
+
+| Method | Return type | Description |
+|--------|-------------|-------------|
+| `getFormatted()` | `string` | Zero-padded to 10 digits, e.g. `0000127206`. |
+| `getNumericValue()` | `number` | Numeric integer value of the KRS number. |
+
+## Examples
+
+```ts
+const krs = Numerik.krs().parse('0000127206')
+
+krs.getRaw()           // '0000127206'
+krs.getNormalized()    // '0000127206'
+krs.getFormatted()     // '0000127206'
+krs.getNumericValue()  // 127206
+
+// Short form — leading zeros are not required on input
+const krs2 = Numerik.krs().parse('127206')
+
+krs2.getRaw()           // '127206'
+krs2.getNormalized()    // '127206'
+krs2.getFormatted()     // '0000127206'
+krs2.getNumericValue()  // 127206
+```
+
+## Failure reasons
+
+| Reason | Value | When |
+|--------|-------|------|
+| `InvalidLength` | `invalid_length` | Input has more than 10 digits after normalisation. |
+| `InvalidCharacters` | `invalid_characters` | Non-digit characters remain after stripping whitespace. |
+| `AllZeros` | `all_zeros` | All digits are zero — numeric value is 0, which is not a valid registry number. |
+| `AllSameDigit` | `all_same_digit` | All 10 digits are identical — strict mode only. |
+
+## Validation algorithm
+
+KRS is a sequential registry number with no checksum. Validation is structural only:
+
+1. Strip spaces. Assert between 1 and 10 digits remain.
+2. Assert all remaining characters are digits.
+3. Assert the numeric value is not zero.
+4. In strict mode, zero-pad to 10 digits and reject inputs where all digits are identical; fail with `AllSameDigit`.
+
+A number that passes these checks is **structurally valid** — it conforms to the KRS format. It may or may not correspond to an actually registered entity.

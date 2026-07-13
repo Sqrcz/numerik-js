@@ -1,0 +1,111 @@
+---
+title: Obsługa błędów
+description: Jak numerik-js używa wyjątków. Klasa ValidationException i kiedy jest rzucana.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+- `isValid()` i `validate()` nigdy nie rzucają wyjątków — zawsze zwracają wartość.
+- `parse()` rzuca wyjątek `ValidationException` dla nieprawidłowych danych wejściowych.
+- `tryParse()` nigdy nie rzuca wyjątku — zwraca `null` przy niepowodzeniu.
+
+Wszystkie trzy metody są dostępne w tej samej klasie identyfikatora (np. `PeselIdentifier`).
+
+## ValidationException
+
+`ValidationException` dziedziczy po wbudowanej klasie `Error`. Nie ma podklas — każde niepowodzenie parsowania, niezależnie od kategorii, rzuca tę samą klasę.
+
+```ts
+class ValidationException extends Error {
+  readonly result: ValidationResult
+  // message: string — ustawiony na komunikat pierwszego błędu
+  // name: 'ValidationException'
+}
+```
+
+Aby dowiedzieć się, *dlaczego* `ValidationException` został rzucony, sprawdź jego właściwość `result` — ten sam `ValidationResult`, który zwróciłoby `validate()`. Pełne API `ValidationResult`/`ValidationFailureReason` znajdziesz w sekcji [Wyniki walidacji](/pl/guide/validation-results/).
+
+## Przechwytywanie wyjątków
+
+```ts
+import { Numerik, ValidationException } from '@slashlab/numerik-js'
+
+try {
+  const pesel = Numerik.pesel().parse(input)
+} catch (err) {
+  if (err instanceof ValidationException) {
+    console.log(err.message)                          // komunikat pierwszego błędu
+    console.log(err.result.getFirstFailure()?.reason)  // wartość ValidationFailureReason
+  } else {
+    throw err
+  }
+}
+```
+
+Ponieważ nie ma hierarchii podklas wyjątków, rozróżniaj kategorie błędów na podstawie powodu, a nie typu wyjątku:
+
+```ts
+import { Numerik, ValidationException, ValidationFailureReason } from '@slashlab/numerik-js'
+
+try {
+  const pesel = Numerik.pesel().parse(input)
+} catch (err) {
+  if (!(err instanceof ValidationException)) throw err
+
+  switch (err.result.getFirstFailure()?.reason) {
+    case ValidationFailureReason.InvalidChecksum:
+      // niezgodność cyfry kontrolnej
+      break
+    case ValidationFailureReason.InvalidDate:
+    case ValidationFailureReason.FutureDate:
+    case ValidationFailureReason.InvalidMonth:
+      // niemożliwa data zakodowana wewnątrz identyfikatora
+      break
+    default:
+      // zła długość, niedozwolone znaki lub inne naruszenie reguły strukturalnej
+  }
+}
+```
+
+## Wybór między parse() a validate()
+
+<Aside type="tip">
+Jeśli potrzebujesz tylko sprawdzić, czy dane wejściowe są prawidłowe — użyj `validate()` lub `isValid()`. Nigdy nie rzucają wyjątków i są bezpieczne do wywołania na dowolnych niezaufanych danych wejściowych bez try/catch.
+</Aside>
+
+Użyj `parse()`, gdy:
+- Potrzebujesz wyodrębnionych danych z obiektu wartości.
+- Wolisz obsługę błędów przez wyjątki (np. wewnątrz funkcji, która już ma blok catch).
+
+Użyj `tryParse()`, gdy:
+- Potrzebujesz obiektu wartości, ale zamiast wyjątku wolisz dostać `null` przy błędnych danych.
+- Rzucanie wyjątku byłoby niewygodne (np. wewnątrz pętli lub potoku importu danych).
+
+```ts
+// Rzuca wyjątek przy nieprawidłowych danych wejściowych
+const pesel = Numerik.pesel().parse(input)
+
+// Zwraca null przy nieprawidłowych danych wejściowych
+const maybePesel = Numerik.pesel().tryParse(input)
+if (maybePesel === null) {
+  // obsłuż nieprawidłowe dane wejściowe
+}
+```
+
+## Tryb ścisły
+
+Każda funkcja wytwórcza (Factory Method) identyfikatora przyjmuje opcjonalny parametr `strict` (domyślnie `true`). W trybie ścisłym dane wejściowe, które przechodzą wszystkie sprawdzenia algorytmiczne, ale wyglądają podejrzanie — np. ciąg złożony z jednej powtarzającej się cyfry — są odrzucane z `ValidationFailureReason.AllSameDigit`.
+
+```ts
+// Tryb ścisły włączony (domyślnie) — odrzuca podejrzane-ale-poprawne dane wejściowe
+Numerik.pesel().validate('11111111111')          // błąd: AllSameDigit
+
+// Tryb ścisły wyłączony — akceptuje wszystko strukturalnie i algorytmicznie poprawne
+Numerik.pesel(false).validate('11111111111')     // przechodzi
+```
+
+Wyłącz tryb ścisły, gdy przetwarzasz dane historyczne zawierające wartości zastępcze, albo gdy chcesz odróżnić „strukturalnie nieprawidłowe" od „algorytmicznie poprawne, ale podejrzane" w potoku jakości danych.
+
+## Ochrona przed zbyt długimi danymi wejściowymi
+
+Każda metoda identyfikatora natychmiast odrzuca zbyt długie dane wejściowe, zanim rozpocznie się jakiekolwiek przetwarzanie — 32 znaki dla większości identyfikatorów, 40 dla NRB i IBAN (które kodują dłuższe ciągi cyfr). To zabezpiecza przed potencjalnymi atakami DoS przez bardzo duże ciągi znaków.
