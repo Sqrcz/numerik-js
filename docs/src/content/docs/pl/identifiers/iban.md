@@ -85,10 +85,10 @@ iban.getAccountNumber()    // '0000000000000000'
 
 Używa algorytmu **MOD-97** z normy ISO 13616:
 
-1. Odrzuć dane wejściowe dłuższe niż 32 znaki. Usuń spacje. Sprawdź obecność prefiksu `PL`.
+1. Odrzuć dane wejściowe dłuższe niż 40 znaków. Usuń spacje i myślniki. Sprawdź obecność prefiksu `PL`.
 2. Sprawdź, czy pozostało dokładnie 28 znaków (`PL` + 26 cyfr).
-3. Przestaw: przesuń pierwsze 4 znaki (`PL` + 2 cyfry kontrolne) na koniec i zastąp kod kraju jego odpowiednikiem numerycznym (`PL` = `2521`), tworząc 32-cyfrowy ciąg.
-4. Oblicz 32-cyfrowy ciąg modulo 97. Wynik musi wynosić `1`.
+3. Przestaw: przesuń pierwsze 4 znaki (`PL` + 2 cyfry kontrolne) na koniec i zastąp kod kraju jego odpowiednikiem numerycznym (`PL` = `2521`), tworząc 30-cyfrowy ciąg.
+4. Oblicz 30-cyfrowy ciąg modulo 97. Wynik musi wynosić `1`.
 
 Pełna dokumentacja algorytmu MOD-97 NRB w sekcji [Algorytmy](/pl/guide/algorithms/#nrb).
 

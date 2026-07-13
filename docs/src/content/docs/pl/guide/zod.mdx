@@ -35,7 +35,7 @@ import {
 | Schemat | Sygnatura | Opis |
 |---------|-----------|------|
 | `*Schema` | `(strict?: boolean) => ZodString` | Waliduje ciąg znaków; błędy pojawiają się jako problemy Zod. |
-| `*ParseSchema` | `(strict?: boolean) => ZodEffects<ZodString, T>` | Waliduje i przekształca do obiektu z danymi typu `T`. |
+| `*ParseSchema` | `(strict?: boolean) => ZodPipe<ZodString, ZodTransform<T, string>>` | Waliduje i przekształca do obiektu z danymi typu `T`. |
 
 Oba przyjmują ten sam opcjonalny parametr `strict` co odpowiadająca im funkcja wytwórcza `Numerik.*()` — zobacz [Tryb ścisły](/pl/guide/error-handling/#tryb-ścisły).
 

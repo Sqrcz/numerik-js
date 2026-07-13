@@ -35,7 +35,7 @@ import {
 | Schema | Signature | Description |
 |--------|-----------|-------------|
 | `*Schema` | `(strict?: boolean) => ZodString` | Validates the string; errors surface as Zod issues. |
-| `*ParseSchema` | `(strict?: boolean) => ZodEffects<ZodString, T>` | Validates and transforms to the value object type `T`. |
+| `*ParseSchema` | `(strict?: boolean) => ZodPipe<ZodString, ZodTransform<T, string>>` | Validates and transforms to the value object type `T`. |
 
 Both accept the same optional `strict` parameter as their `Numerik.*()` factory counterpart — see [Strict mode](/guide/error-handling/#strict-mode).
 

@@ -85,10 +85,10 @@ iban.getAccountNumber()    // '0000000000000000'
 
 Uses the **MOD-97** algorithm from ISO 13616:
 
-1. Reject inputs longer than 32 characters. Strip spaces. Assert the `PL` prefix is present.
+1. Reject inputs longer than 40 characters. Strip spaces and hyphens. Assert the `PL` prefix is present.
 2. Assert exactly 28 characters remain (`PL` + 26 digits).
-3. Rearrange: move the first 4 characters (`PL` + 2 check digits) to the end and replace the country code with its numeric equivalent (`PL` = `2521`), giving a 32-digit string.
-4. Compute the 32-digit string modulo 97. The result must equal `1`.
+3. Rearrange: move the first 4 characters (`PL` + 2 check digits) to the end and replace the country code with its numeric equivalent (`PL` = `2521`), giving a 30-digit string.
+4. Compute the 30-digit string modulo 97. The result must equal `1`.
 
 See [Algorithms](/guide/algorithms/#nrb) for the full NRB MOD-97 reference.
 

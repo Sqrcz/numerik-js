@@ -87,7 +87,7 @@ nrb.getAccountNumber()    // '0000000000000000'
 
 Używa algorytmu **MOD-97** z normy ISO 13616 (standard IBAN):
 
-1. Odrzuć dane wejściowe dłuższe niż 32 znaki. Usuń spacje i opcjonalny prefiks `PL`.
+1. Odrzuć dane wejściowe dłuższe niż 40 znaków. Usuń spacje i myślniki oraz opcjonalny prefiks `PL`.
 2. Sprawdź, czy pozostało dokładnie 26 cyfr.
-3. Przestaw: przesuń pierwsze 4 cyfry na koniec i poprzedź numerycznym kodem kraju dla Polski (`2521`), tworząc 32-cyfrowy ciąg.
-4. Oblicz 32-cyfrowy ciąg modulo 97. Wynik musi wynosić `1`.
+3. Przestaw: przesuń pierwsze 2 cyfry (cyfry kontrolne) na koniec i wstaw numeryczny kod kraju dla Polski (`2521`) między pozostałe 24 cyfry a nimi, tworząc 30-cyfrowy ciąg.
+4. Oblicz 30-cyfrowy ciąg modulo 97. Wynik musi wynosić `1`.

@@ -85,5 +85,6 @@ Wagi: `6, 5, 7, 2, 3, 4, 5, 6, 7`
 1. Usuń myślniki i spacje. Sprawdź, czy pozostało dokładnie 10 cyfr.
 2. Sprawdź, czy pierwsze 3 cyfry to nie `000`.
 3. Pomnóż każdą z pierwszych 9 cyfr przez odpowiednią wagę, zsumuj, oblicz `mod 11`. Wynik musi być równy cyfrze 10; ponieważ jedna cyfra może przyjmować tylko wartości 0–9, wynik modulo równy `10` nigdy nie pasuje i zawsze kończy się błędem `InvalidChecksum`.
+4. W trybie ścisłym odrzuć dane wejściowe, w których wszystkie 10 cyfr jest identycznych; błąd `AllSameDigit`.
 
 Pełna dokumentacja w sekcji [Algorytmy](/pl/guide/algorithms/).
