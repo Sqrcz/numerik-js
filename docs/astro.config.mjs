@@ -110,13 +110,29 @@ export default defineConfig({
           label: 'Guide',
           translations: { pl: 'Przewodnik' },
           items: [
-            { label: 'Validation Results', slug: 'guide/validation-results', translations: { pl: 'Wyniki walidacji' } },
-            { label: 'Error Handling', slug: 'guide/error-handling', translations: { pl: 'Obsługa błędów' } },
-            { label: 'Algorithms', slug: 'guide/algorithms', translations: { pl: 'Algorytmy' } },
+            {
+              label: 'Validation Results',
+              slug: 'guide/validation-results',
+              translations: { pl: 'Wyniki walidacji' },
+            },
+            {
+              label: 'Error Handling',
+              slug: 'guide/error-handling',
+              translations: { pl: 'Obsługa błędów' },
+            },
+            {
+              label: 'Algorithms',
+              slug: 'guide/algorithms',
+              translations: { pl: 'Algorytmy' },
+            },
             { label: 'Zod', slug: 'guide/zod', translations: { pl: 'Zod' } },
           ],
         },
-        { label: 'Contributing', slug: 'contributing', translations: { pl: 'Współtworzenie' } },
+        {
+          label: 'Contributing',
+          slug: 'contributing',
+          translations: { pl: 'Współtworzenie' },
+        },
       ],
       head: [
         {
