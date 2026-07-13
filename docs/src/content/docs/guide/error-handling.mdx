@@ -1,0 +1,111 @@
+---
+title: Error Handling
+description: How numerik-js uses exceptions. The ValidationException class and when it is thrown.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+- `isValid()` and `validate()` never throw — they always return a value.
+- `parse()` throws a `ValidationException` on invalid input.
+- `tryParse()` never throws — it returns `null` on failure.
+
+All three methods live on the same identifier class (e.g. `PeselIdentifier`).
+
+## ValidationException
+
+`ValidationException` extends the built-in `Error`. It does not have subclasses — every parse failure, regardless of category, throws the same class.
+
+```ts
+class ValidationException extends Error {
+  readonly result: ValidationResult
+  // message: string — set to the first failure's message
+  // name: 'ValidationException'
+}
+```
+
+To find out *why* a `ValidationException` was thrown, inspect its `result` property — the same `ValidationResult` that `validate()` would have returned. See [Validation Results](/guide/validation-results/) for the full `ValidationResult` / `ValidationFailureReason` API.
+
+## Catching exceptions
+
+```ts
+import { Numerik, ValidationException } from '@slashlab/numerik-js'
+
+try {
+  const pesel = Numerik.pesel().parse(input)
+} catch (err) {
+  if (err instanceof ValidationException) {
+    console.log(err.message)                          // first failure's message
+    console.log(err.result.getFirstFailure()?.reason)  // ValidationFailureReason value
+  } else {
+    throw err
+  }
+}
+```
+
+Since there is no exception subclass hierarchy, branch on the failure reason instead of the exception type:
+
+```ts
+import { Numerik, ValidationException, ValidationFailureReason } from '@slashlab/numerik-js'
+
+try {
+  const pesel = Numerik.pesel().parse(input)
+} catch (err) {
+  if (!(err instanceof ValidationException)) throw err
+
+  switch (err.result.getFirstFailure()?.reason) {
+    case ValidationFailureReason.InvalidChecksum:
+      // checksum digit mismatch
+      break
+    case ValidationFailureReason.InvalidDate:
+    case ValidationFailureReason.FutureDate:
+    case ValidationFailureReason.InvalidMonth:
+      // impossible date encoded inside the identifier
+      break
+    default:
+      // wrong length, unexpected characters, or another structural failure
+  }
+}
+```
+
+## Choosing between parse() and validate()
+
+<Aside type="tip">
+If you only need to know *whether* input is valid — use `validate()` or `isValid()`. These never throw and are safe to call on arbitrary untrusted input without a try/catch.
+</Aside>
+
+Use `parse()` when:
+- You need the value object's extracted data.
+- You prefer exception-based control flow (e.g. inside a function that already has a catch block).
+
+Use `tryParse()` when:
+- You need the value object, but you want `null` instead of an exception on bad input.
+- You are in a context where throwing would be inconvenient (e.g. inside a loop or a data import pipeline).
+
+```ts
+// Exception-based — throws on invalid input
+const pesel = Numerik.pesel().parse(input)
+
+// Null-based — returns null on invalid input
+const maybePesel = Numerik.pesel().tryParse(input)
+if (maybePesel === null) {
+  // handle invalid input
+}
+```
+
+## Strict mode
+
+Every identifier factory method accepts an optional `strict` parameter (default `true`). In strict mode, inputs that pass every algorithmic check but are semantically suspicious — such as all-same-digit patterns — are rejected with `ValidationFailureReason.AllSameDigit`.
+
+```ts
+// Strict mode on (default) — rejects suspicious-but-valid inputs
+Numerik.pesel().validate('11111111111')          // fails: AllSameDigit
+
+// Strict mode off — accepts anything structurally and algorithmically valid
+Numerik.pesel(false).validate('11111111111')     // passes
+```
+
+Turn strict mode off when processing legacy data that may contain placeholder values, or when you want to distinguish "structurally invalid" from "algorithmically valid but suspicious" in a data quality pipeline.
+
+## Input length guard
+
+Every identifier method rejects overly long inputs immediately, before any other processing — 32 characters for most identifiers, 40 for NRB and IBAN (which encode longer digit strings). This prevents potential DoS via very large strings.

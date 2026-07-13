@@ -1,0 +1,62 @@
+---
+title: Zod
+description: Waliduj i parsuj polskie numery identyfikacyjne bezpośrednio w schematach Zod za pomocą dodatkowej ścieżki importu @slashlab/numerik-js/zod.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+<Aside type="tip">
+`zod` to opcjonalna zewnętrzna zależność — zainstaluj ją tylko jeśli planujesz korzystać z tej ścieżki importu.
+</Aside>
+
+Każdy identyfikator eksportuje parę schematów Zod z dodatkowej ścieżki importu `/zod`:
+
+```ts
+import {
+  // Osobowe
+  peselSchema, peselParseSchema,
+  idCardSchema, idCardParseSchema,
+  passportSchema, passportParseSchema,
+
+  // Podatkowe i rejestrowe
+  nipSchema, nipParseSchema,
+  vatEuSchema, vatEuParseSchema,
+  regonSchema, regonParseSchema,
+  krsSchema, krsParseSchema,
+
+  // Bankowe
+  nrbSchema, nrbParseSchema,
+  ibanSchema, ibanParseSchema,
+} from '@slashlab/numerik-js/zod'
+```
+
+## Para schematów
+
+| Schemat | Sygnatura | Opis |
+|---------|-----------|------|
+| `*Schema` | `(strict?: boolean) => ZodString` | Waliduje ciąg znaków; błędy pojawiają się jako problemy Zod. |
+| `*ParseSchema` | `(strict?: boolean) => ZodEffects<ZodString, T>` | Waliduje i przekształca do obiektu z danymi typu `T`. |
+
+Oba przyjmują ten sam opcjonalny parametr `strict` co odpowiadająca im funkcja wytwórcza `Numerik.*()` — zobacz [Tryb ścisły](/pl/guide/error-handling/#tryb-ścisły).
+
+## Przykład
+
+```ts
+import { z } from 'zod'
+import { peselSchema, peselParseSchema } from '@slashlab/numerik-js/zod'
+
+// Tylko walidacja
+const formSchema = z.object({
+  pesel: peselSchema(),
+})
+
+// Walidacja i przekształcenie do obiektu z danymi Pesel
+const parseFormSchema = z.object({
+  pesel: peselParseSchema(),
+})
+
+const result = parseFormSchema.parse({ pesel: '92060512186' })
+result.pesel.getBirthDate()  // Date — 1992-06-05
+```
+
+Użyj `*Schema`, gdy potrzebujesz tylko walidacji pass/fail jako części większego obiektu Zod (np. formularza). Użyj `*ParseSchema`, gdy chcesz też mieć dostęp do obiektu z danymi — jego metod — w wyniku.

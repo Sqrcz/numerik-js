@@ -1,0 +1,197 @@
+---
+title: Algorytmy
+description: Dokumentacja algorytmów sum kontrolnych używanych przez numerik-js do walidacji numerów PESEL, NIP, REGON, NRB, dowodów osobistych i paszportów.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+Algorytmy walidacji w numerik-js opierają się wyłącznie na arytmetyce tablicowej — same obliczenia sumy kontrolnej nie używają wyrażeń regularnych.
+
+## PESEL
+
+**Wagi:** `1, 3, 7, 9, 1, 3, 7, 9, 1, 3`
+
+### Kroki
+
+1. Usuń białe znaki. Odrzuć wejścia dłuższe niż 32 znaki. Wymagaj dokładnie 11 cyfr — inaczej błąd `InvalidLength`.
+2. Odrzuć znaki niebędące cyframi — błąd `InvalidCharacters`.
+3. Zdekoduj datę urodzenia według poniższej tabeli kodowania stulecia. Jeśli zapisany miesiąc nie pasuje do żadnego zakresu — błąd `InvalidMonth`. Jeśli zdekodowana data nie istnieje w kalendarzu — błąd `InvalidDate`. W trybie ścisłym: data urodzenia w przyszłości zwraca błąd `FutureDate`.
+4. Oblicz sumę kontrolną: pomnóż każdą z pierwszych 10 cyfr przez odpowiednią wagę i zsumuj wyniki. Następnie: `suma mod 10` → `10 minus wynik` → `mod 10`. Otrzymana wartość musi zgadzać się z 11. cyfrą — inaczej błąd `InvalidChecksum`.
+5. W trybie ścisłym: jeśli wszystkie 11 cyfr jest identycznych — błąd `AllSameDigit`.
+
+### Kodowanie stulecia
+
+Cyfry miesiąca w numerze PESEL kodują zarówno rzeczywisty miesiąc urodzenia, jak i stulecie — poprzez dodanie przesunięcia:
+
+| Zapisany zakres miesięcy | Rzeczywisty miesiąc | Stulecie urodzenia |
+| ------------------------ | ------------------- | ------------------ |
+| 01 – 12                  | 01 – 12             | 1900 – 1999        |
+| 21 – 32                  | 01 – 12             | 2000 – 2099        |
+| 41 – 52                  | 01 – 12             | 2100 – 2199        |
+| 61 – 72                  | 01 – 12             | 2200 – 2299        |
+| 81 – 92                  | 01 – 12             | 1800 – 1899        |
+
+### Przykład obliczenia
+
+Numer: `9 2 0 6 0 5 1 2 1 8 6`
+
+| Pozycja | Cyfra | Waga | Iloczyn |
+| ------- | ----- | ---- | ------- |
+| 1       | 9     | 1    | 9       |
+| 2       | 2     | 3    | 6       |
+| 3       | 0     | 7    | 0       |
+| 4       | 6     | 9    | 54      |
+| 5       | 0     | 1    | 0       |
+| 6       | 5     | 3    | 15      |
+| 7       | 1     | 7    | 7       |
+| 8       | 2     | 9    | 18      |
+| 9       | 1     | 1    | 1       |
+| 10      | 8     | 3    | 24      |
+
+Suma = 9 + 6 + 0 + 54 + 0 + 15 + 7 + 18 + 1 + 24 = **134**
+
+`134 mod 10 = 4` → `10 - 4 = 6` → `6 mod 10 = 6` — cyfra 11 wynosi `6` ✓
+
+<Aside type="note">
+PESEL `92060512186` jest używany jako przykład w całej dokumentacji. Zakodowana data to `1992-06-05`, płeć to Kobieta (cyfra 10 wynosi `8`, cyfra parzysta), numer porządkowy to `1218` (cyfry 7–10).
+</Aside>
+
+---
+
+## ICAO 9303
+
+Używany przez [dowód osobisty](/pl/identifiers/id-card/) i [paszport](/pl/identifiers/passport/) — ten sam międzynarodowy standard stosowany w dokumentach podróży na całym świecie.
+
+**Wagi:** `7, 3, 1` powtarzane na pozycjach 1–8 (8 znaków wejściowych). Pozycja 9 to cyfra kontrolna.
+
+**Wartości znaków:**
+- Cyfry `0`–`9` → wartość nominalna (`0`–`9`)
+- Litery `A`–`Z` → `10`–`35` (`A`=10, `B`=11, … `Z`=35)
+
+### Kroki
+
+1. Usuń spacje i myślniki. Zamień na wielkie litery. Odrzuć wejścia dłuższe niż 32 znaki.
+2. Wymagaj dokładnie 9 znaków — inaczej błąd `InvalidLength`.
+3. Sprawdź typy znaków zgodnie ze specyfikacją identyfikatora (patrz strony poszczególnych identyfikatorów).
+4. Pomnóż każdy z pierwszych 8 znaków przez odpowiednią wagę i zsumuj iloczyny.
+5. Oblicz `suma mod 10`. Wynik musi być równy 9. znakowi — inaczej błąd `InvalidChecksum`.
+
+### Przykład obliczenia
+
+Numer: `A B C 1 2 3 4 5 4` (dowód osobisty)
+
+| Pozycja | Znak | Wartość | Waga | Iloczyn |
+| ------- | ---- | ------- | ---- | ------- |
+| 1       | A    | 10      | 7    | 70      |
+| 2       | B    | 11      | 3    | 33      |
+| 3       | C    | 12      | 1    | 12      |
+| 4       | 1    | 1       | 7    | 7       |
+| 5       | 2    | 2       | 3    | 6       |
+| 6       | 3    | 3       | 1    | 3       |
+| 7       | 4    | 4       | 7    | 28      |
+| 8       | 5    | 5       | 3    | 15      |
+
+Suma = 70 + 33 + 12 + 7 + 6 + 3 + 28 + 15 = **174**
+
+`174 mod 10 = 4` — cyfra 9 wynosi `4` ✓
+
+---
+
+## NIP
+
+**Wagi:** `6, 5, 7, 2, 3, 4, 5, 6, 7`
+
+### Kroki
+
+1. Usuń myślniki i spacje. Odrzuć wejścia dłuższe niż 32 znaki. Wymagaj dokładnie 10 cyfr — inaczej błąd `InvalidLength`.
+2. Odrzuć znaki niebędące cyframi — błąd `InvalidCharacters`.
+3. Pierwsze 3 cyfry nie mogą być `000` — inaczej błąd `InvalidFormat`.
+4. Pomnóż każdą z pierwszych 9 cyfr przez jej wagę i zsumuj iloczyny. Oblicz `suma mod 11`. Wynik musi być równy dziesiątej cyfrze. Uwaga: wynik równy `10` jest niemożliwy do zakodowania jako pojedyncza cyfra, więc każdy taki numer zawsze skutkuje błędem `InvalidChecksum`.
+
+### Przykład obliczenia
+
+Numer: `5 2 6 0 2 5 0 2 7 4`
+
+| Pozycja | Cyfra | Waga | Iloczyn |
+| ------- | ----- | ---- | ------- |
+| 1       | 5     | 6    | 30      |
+| 2       | 2     | 5    | 10      |
+| 3       | 6     | 7    | 42      |
+| 4       | 0     | 2    | 0       |
+| 5       | 2     | 3    | 6       |
+| 6       | 5     | 4    | 20      |
+| 7       | 0     | 5    | 0       |
+| 8       | 2     | 6    | 12      |
+| 9       | 7     | 7    | 49      |
+
+Suma = 30 + 10 + 42 + 0 + 6 + 20 + 0 + 12 + 49 = **169**
+
+`169 mod 11 = 4` — cyfra 10 wynosi `4` ✓
+
+---
+
+## VAT-EU
+
+Walidacja VAT-EU to nakładka na algorytm NIP:
+
+1. Usuń spacje i myślniki. Odrzuć wejścia dłuższe niż 32 znaki.
+2. Wymagaj, aby pierwsze dwa znaki były `PL` (bez rozróżniania wielkości liter) — inaczej błąd `InvalidFormat`.
+3. Usuń prefiks. Wymagaj dokładnie 10 cyfr.
+4. Zastosuj pełny algorytm [NIP](#nip) do wyodrębnionych cyfr.
+
+---
+
+## REGON
+
+REGON używa algorytmu dwuetapowego. Forma 14-cyfrowa najpierw waliduje pierwsze 9 cyfr jako samodzielny REGON-9, a dopiero potem weryfikuje pełną liczbę.
+
+### 9-cyfrowy REGON
+
+**Wagi:** `8, 9, 2, 3, 4, 5, 6, 7`
+
+1. Usuń białe znaki. Wymagaj dokładnie 9 cyfr.
+2. Pomnóż pierwsze 8 cyfr przez wagi i zsumuj. Oblicz `suma mod 11`. Jeśli wynik to `10`, cyfra kontrolna musi wynosić `0` — w przeciwnym razie wynik musi być równy 9. cyfrze.
+
+### 14-cyfrowy REGON
+
+**Wagi:** `2, 4, 8, 5, 0, 9, 7, 3, 6, 1, 2, 4, 8`
+
+1. Usuń białe znaki. Wymagaj dokładnie 14 cyfr.
+2. Zwaliduj cyfry 1–9 jako samodzielny REGON-9 (patrz wyżej).
+3. Pomnóż pierwsze 13 cyfr przez wagi i zsumuj. Oblicz `suma mod 11`. Jeśli wynik to `10`, cyfra 14 musi wynosić `0` — w przeciwnym razie wynik musi być równy 14. cyfrze.
+
+---
+
+## KRS
+
+KRS **nie ma publicznego algorytmu sumy kontrolnej** — to sekwencyjny numer nadawany przez sąd rejestrowy przy wpisie do rejestru. numerik-js sprawdza wyłącznie format i zakres:
+
+1. Usuń białe znaki. Odrzuć wejścia dłuższe niż 32 znaki. Wymagaj ≤ 10 cyfr.
+2. Odrzuć znaki niebędące cyframi.
+3. Wartość numeryczna musi być większa od `0` — inaczej błąd `AllZeros`.
+4. W trybie ścisłym: uzupełnij do 10 cyfr zerami i odrzuć wejścia z identycznymi cyframi — błąd `AllSameDigit`.
+
+Żeby sprawdzić, czy konkretny numer KRS jest faktycznie przypisany do podmiotu, skorzystaj z oficjalnego [API rejestru KRS](https://prs.ms.gov.pl/krs/openApi).
+
+---
+
+## NRB
+
+NRB używa standardowego algorytmu IBAN MOD-97:
+
+1. Usuń spacje i myślniki. Usuń opcjonalny prefiks `PL`. Odrzuć wejścia dłuższe niż 40 znaków.
+2. Wymagaj dokładnie 26 cyfr.
+3. Wymagaj, aby wszystkie znaki były cyframi.
+4. Przestaw znaki w następującej kolejności: cyfry 3–26 (BBAN) + `2521` (kodowanie numeryczne `PL`) + cyfry 1–2 (cyfry kontrolne).
+5. Oblicz resztę z dzielenia powstałej liczby przez 97. Wynik musi wynosić `1`.
+
+---
+
+## IBAN
+
+Walidacja IBAN to nakładka na algorytm NRB:
+
+1. Usuń spacje i myślniki. Odrzuć wejścia dłuższe niż 40 znaków.
+2. Wymagaj, aby pierwsze dwa znaki były `PL` (bez rozróżniania wielkości liter) — inaczej błąd `InvalidFormat`.
+3. Usuń prefiks. Wymagaj dokładnie 26 cyfr — inaczej błąd `InvalidLength`.
+4. Zastosuj pełny algorytm MOD-97 [NRB](#nrb) do wyodrębnionych cyfr.

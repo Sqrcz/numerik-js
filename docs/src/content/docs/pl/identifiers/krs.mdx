@@ -1,0 +1,92 @@
+---
+title: KRS
+description: Waliduj i parsuj polskie numery KRS z @slashlab/numerik-js.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+KRS (*Krajowy Rejestr Sądowy*) to numer nadawany podmiotom prawnym w Polsce przez sąd rejestrowy. Jest to 10-cyfrowy sekwencyjny numer rejestru.
+
+<Aside type="caution" title="Ograniczenie walidacji offline">
+KRS nie posiada publicznie udokumentowanego algorytmu sumy kontrolnej. Numerik waliduje **wyłącznie format i strukturę** — nie może zweryfikować, czy dany numer KRS jest faktycznie przypisany w rejestrze. Aby uzyskać miarodajną weryfikację, skorzystaj z oficjalnego [API rejestru KRS](https://prs.ms.gov.pl/krs/openApi).
+</Aside>
+
+## Użycie
+
+```ts
+import { Numerik } from '@slashlab/numerik-js'
+
+// Szybkie sprawdzenie
+Numerik.krs().isValid('0000127206')   // true
+
+// Numery bez wiodących zer są akceptowane i normalizowane
+Numerik.krs().isValid('127206')       // true
+
+// Pełny obiekt z danymi
+const result = Numerik.krs().validate('0000127206')
+result.isValid   // true
+
+// Parsowanie do obiektu z danymi
+const krs = Numerik.krs().parse('0000127206')
+
+// Null zamiast wyjątku w przypadku błędu
+const maybe = Numerik.krs().tryParse('bad-input') // null
+```
+
+## Metody zwracanego obiektu
+
+`parse()` i `tryParse()` zwracają instancję `Krs`.
+
+### Podstawowe
+
+| Metoda | Typ zwracany | Opis |
+|--------|-------------|------|
+| `getRaw()` | `string` | Oryginalne dane wejściowe, bez zmian. |
+| `getNormalized()` | `string` | Same cyfry tak jak podane, bez dopełniania zerami. |
+| `toString()` | `string` | Alias dla `getNormalized()`. |
+
+### Formatowanie i metadane
+
+| Metoda | Typ zwracany | Opis |
+|--------|-------------|------|
+| `getFormatted()` | `string` | Dopełniony zerami do 10 cyfr, np. `0000127206`. |
+| `getNumericValue()` | `number` | Liczbowa wartość całkowita numeru KRS. |
+
+## Przykłady
+
+```ts
+const krs = Numerik.krs().parse('0000127206')
+
+krs.getRaw()           // '0000127206'
+krs.getNormalized()    // '0000127206'
+krs.getFormatted()     // '0000127206'
+krs.getNumericValue()  // 127206
+
+// Skrócona forma — wiodące zera nie są wymagane w danych wejściowych
+const krs2 = Numerik.krs().parse('127206')
+
+krs2.getRaw()           // '127206'
+krs2.getNormalized()    // '127206'
+krs2.getFormatted()     // '0000127206'
+krs2.getNumericValue()  // 127206
+```
+
+## Powody błędów
+
+| Powód | Wartość | Warunek |
+|-------|---------|-------|
+| `InvalidLength` | `invalid_length` | Dane wejściowe mają więcej niż 10 cyfr po normalizacji. |
+| `InvalidCharacters` | `invalid_characters` | Po usunięciu białych znaków pozostają znaki inne niż cyfry. |
+| `AllZeros` | `all_zeros` | Wszystkie cyfry to zero — wartość liczbowa wynosi 0, co nie jest prawidłowym numerem rejestru. |
+| `AllSameDigit` | `all_same_digit` | Wszystkie 10 cyfr jest identycznych — tylko tryb ścisły. |
+
+## Algorytm walidacji
+
+KRS to sekwencyjny numer rejestru bez sumy kontrolnej. Walidacja ma charakter wyłącznie strukturalny:
+
+1. Usuń spacje. Sprawdź, czy pozostało od 1 do 10 cyfr.
+2. Sprawdź, czy wszystkie pozostałe znaki to cyfry.
+3. Sprawdź, czy wartość liczbowa nie wynosi zero.
+4. W trybie ścisłym dopełnij zerami do 10 cyfr i odrzuć dane wejściowe, w których wszystkie cyfry są identyczne; zwróć błąd `AllSameDigit`.
+
+Numer, który przeszedł te sprawdzenia, jest **strukturalnie prawidłowy** — jest zgodny z formatem KRS. Może, ale nie musi odpowiadać faktycznie zarejestrowanemu podmiotowi.

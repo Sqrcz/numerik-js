@@ -1,0 +1,99 @@
+---
+title: Contributing
+description: How to set up numerik-js locally, run checks, and submit a pull request.
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+## Development setup
+
+<Steps>
+
+1. **Fork and clone**
+
+   ```bash
+   git clone https://github.com/sqrcz/numerik-js.git
+   cd numerik-js
+   ```
+
+2. **Install dependencies**
+
+   ```bash
+   pnpm install
+   ```
+
+3. **Run the test suite**
+
+   ```bash
+   pnpm test
+   ```
+
+</Steps>
+
+## Local checks
+
+| Command | What it runs |
+|---------|-------------|
+| `pnpm test` | Vitest test suite |
+| `pnpm test:watch` | Vitest in watch mode |
+| `pnpm test:cover` | Vitest with coverage |
+| `pnpm typecheck` | `tsc --noEmit` |
+| `pnpm lint` | Biome lint + format check |
+| `pnpm lint:fix` | Biome lint + format — auto-fix |
+| `pnpm build` | Compile to `dist/` |
+| `pnpm check` | `typecheck` + `lint` + `test` in sequence |
+
+Run `pnpm check` before opening a PR to catch all issues locally.
+
+## Adding a new identifier
+
+Adding a new identifier requires touching several files. PRs missing any item will not be merged:
+
+- [ ] Create `src/value-objects/NewIdentifier.ts` (implements `IdentifierInterface`)
+- [ ] Create `src/identifiers/NewIdentifierIdentifier.ts` (implements both `ValidatorInterface` and `ParserInterface`; accepts `strict: boolean = true`)
+- [ ] Add new `ValidationFailureReason` cases if the identifier introduces new failure types
+- [ ] Add an entry to `src/Numerik.ts` and export it from `src/index.ts`
+- [ ] Add Zod schemas to `src/zod/index.ts`
+- [ ] Add `tests/new-identifier.test.ts`
+- [ ] Add an identifier page under `docs/src/content/docs/identifiers/`
+- [ ] Update `CHANGELOG.md`
+
+## Branch naming
+
+| Type | Pattern | Example |
+|------|---------|---------|
+| Feature | `feat/<short-name>` | `feat/passport-identifier` |
+| Fix | `fix/<short-name>` | `fix/pesel-century-calc` |
+| Chore | `chore/<short-name>` | `chore/update-dependencies` |
+
+## Commit style
+
+Use [Conventional Commits](https://www.conventionalcommits.org):
+
+```
+feat: add PassportIdentifier
+fix: correct PESEL century calculation for 2000s
+docs: update REGON algorithm description
+test: add NIP fixtures for invalid tax office codes
+chore: bump vitest to 4.x
+refactor: extract checksum calculation to dedicated method
+```
+
+## Pull request process
+
+1. Fork the repository and create your branch from `main`.
+2. Add tests for any new behaviour — all tests must pass.
+3. Ensure `pnpm check` passes.
+4. Open a PR against `main` and fill in the template completely.
+
+<Aside type="note">
+PRs are merged with rebase — each commit lands on `main` individually, so keep your history clean and meaningful.
+</Aside>
+
+## Reporting a bug
+
+Use the [Bug Report](https://github.com/sqrcz/numerik-js/issues/new?template=bug_report.yml) template on GitHub.
+
+## Security vulnerabilities
+
+**Do not open a public issue.** Report via [GitHub's private advisory system](https://github.com/sqrcz/numerik-js/security/advisories/new). See [SECURITY.md](https://github.com/sqrcz/numerik-js/blob/main/SECURITY.md).

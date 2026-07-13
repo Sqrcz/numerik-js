@@ -1,0 +1,156 @@
+---
+title: Installation & Quick Start
+description: Install @slashlab/numerik-js and validate your first Polish identifier in under a minute.
+---
+
+import { Steps, Tabs, TabItem } from '@astrojs/starlight/components';
+
+## Requirements
+
+- Node.js **22** or higher (or any runtime with ES modules and modern `Date` support)
+- TypeScript **5.0+** (optional — the library ships bundled types and works in plain JavaScript)
+
+## Installation
+
+<Steps>
+
+1. **Install the package**
+
+   <Tabs>
+     <TabItem label="npm">
+       ```sh
+       npm install @slashlab/numerik-js
+       ```
+     </TabItem>
+     <TabItem label="pnpm">
+       ```sh
+       pnpm add @slashlab/numerik-js
+       ```
+     </TabItem>
+     <TabItem label="yarn">
+       ```sh
+       yarn add @slashlab/numerik-js
+       ```
+     </TabItem>
+     <TabItem label="bun">
+       ```sh
+       bun add @slashlab/numerik-js
+       ```
+     </TabItem>
+   </Tabs>
+
+2. **No configuration needed**
+
+   The package ships ESM and CJS builds. There is no setup step, no config file, and no tree-shaking required.
+
+3. **Use it**
+
+   ```ts
+   import { Numerik } from '@slashlab/numerik-js'
+
+   Numerik.pesel().isValid('92060512186') // true
+   ```
+
+</Steps>
+
+## Quick start
+
+### Boolean validation
+
+```ts
+import { Numerik } from '@slashlab/numerik-js'
+
+Numerik.pesel().isValid('92060512186')                    // true
+Numerik.idCard().isValid('ABC123454')                     // true
+Numerik.passport().isValid('AB1234564')                   // true
+Numerik.nip().isValid('5260250274')                       // true
+Numerik.vatEu().isValid('PL5260250274')                   // true
+Numerik.regon().isValid('691761365')                      // true
+Numerik.krs().isValid('0000127206')                       // true
+Numerik.nrb().isValid('61102010260000000000000000')       // true
+Numerik.iban().isValid('PL61102010260000000000000000')    // true
+```
+
+### Rich validation result
+
+`validate()` never throws. It returns a `ValidationResult` carrying the list of failures when validation does not pass.
+
+```ts
+import { Numerik } from '@slashlab/numerik-js'
+
+const result = Numerik.pesel().validate('92060512186')
+result.isValid               // true
+result.failures              // []
+
+const failed = Numerik.pesel().validate('00000000000')
+failed.isFailed()            // true
+failed.getFirstFailure()?.reason         // ValidationFailureReason.AllZeros
+failed.getFirstFailure()?.message        // human-readable message
+```
+
+### Parsing to a value object
+
+On success, `parse()` returns a value object. On failure, it throws a `ValidationException`.
+
+```ts
+import { Numerik } from '@slashlab/numerik-js'
+
+const pesel = Numerik.pesel().parse('92060512186')
+pesel.getBirthDate()         // Date — 1992-06-05
+pesel.getGender()            // Gender.Female
+pesel.getAge()               // number — calculated from today
+pesel.isAdult()              // true
+```
+
+Use `tryParse()` when you prefer `null` on failure instead of an exception:
+
+```ts
+const pesel = Numerik.pesel().tryParse('bad-input') // null
+```
+
+### Choosing the right method
+
+| Method | Returns | Throws | Use when |
+|--------|---------|--------|----------|
+| `isValid()` | `boolean` | never | Simple existence check |
+| `validate()` | `ValidationResult` | never | You need the failure reason |
+| `parse()` | value object | `ValidationException` | You need extracted data and want exceptions |
+| `tryParse()` | value object or `null` | never | You need extracted data but prefer null over exceptions |
+
+### Strict mode
+
+All identifiers support a `strict` flag (default `true`). In strict mode, additional semantic checks are applied — for example, PESEL rejects future birth dates and all-same-digit patterns.
+
+```ts
+// Strict mode on (default)
+Numerik.pesel().isValid('11111111111')          // false — all same digit
+
+// Strict mode off
+Numerik.pesel(false).isValid('11111111111')     // true if checksum passes
+
+// Check whether strict mode is active
+Numerik.pesel().isStrict()    // true
+Numerik.pesel(false).isStrict() // false
+```
+
+### Zod integration
+
+The optional `/zod` sub-path provides Zod schemas for all identifiers. Requires `zod` as a peer dependency.
+
+```ts
+import { peselSchema, peselParseSchema } from '@slashlab/numerik-js/zod'
+
+// Validates the string — errors surface as Zod issues
+const schema = peselSchema()
+schema.parse('92060512186') // '92060512186'
+
+// Validates and transforms to a Pesel value object
+const parseSchema = peselParseSchema()
+const pesel = parseSchema.parse('92060512186') // Pesel instance
+pesel.getBirthDate() // Date
+```
+
+## Next steps
+
+- Browse the [PESEL](/identifiers/pesel/), [ID Card](/identifiers/id-card/), [Passport](/identifiers/passport/), [NIP](/identifiers/nip/), [VAT-EU](/identifiers/vat-eu/), [REGON](/identifiers/regon/), [KRS](/identifiers/krs/), [NRB](/identifiers/nrb/), or [IBAN](/identifiers/iban/) reference for full method listings.
+- See [Validation Results](/guide/validation-results/), [Error Handling](/guide/error-handling/), [Algorithms](/guide/algorithms/), and [Zod](/guide/zod/) in the Guide for everything beyond the basics.

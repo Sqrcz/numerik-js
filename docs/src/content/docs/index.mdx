@@ -1,0 +1,99 @@
+---
+title: Numerik JS
+description: TypeScript library for validating and parsing Polish identification numbers — PESEL, NIP, REGON, KRS, NRB, VAT-EU, IBAN, ID Card, and Passport.
+template: splash
+hero:
+  tagline: Validate and parse Polish identification numbers with rich value objects and detailed failure reasons.
+  actions:
+    - text: Get started
+      link: /getting-started/
+      icon: right-arrow
+      variant: primary
+    - text: View on GitHub
+      link: https://github.com/sqrcz/numerik-js
+      icon: github
+      variant: minimal
+---
+
+import { Aside, Card, CardGrid } from '@astrojs/starlight/components';
+
+<Aside type="tip" title="Also available for PHP">
+  Looking for the PHP version? Check out [slashlab/numerik](https://numerik.slashlab.pl) on Packagist.
+</Aside>
+
+## Overview
+
+`@slashlab/numerik-js` is a zero-dependency TypeScript library. Validation tells you *why* input failed, not just *that* it failed. Types are bundled — no `@types/` package needed.
+
+### Personal
+
+<CardGrid stagger>
+  <Card title="PESEL" icon="approve-check">
+    Validates and parses Poland's universal citizen identifier. Extracts birth date, gender, century, age, and ordinal number directly from the number.
+  </Card>
+  <Card title="ID Card" icon="approve-check">
+    Validates Polish national identity card numbers (dowód osobisty). Three-letter series plus six digits, validated with the ICAO 9303 weighted checksum.
+  </Card>
+  <Card title="Passport" icon="approve-check">
+    Validates Polish passport numbers. Two-letter series plus seven digits, validated with the same ICAO 9303 algorithm used in travel documents globally.
+  </Card>
+</CardGrid>
+
+### Tax & Business
+
+<CardGrid stagger>
+  <Card title="NIP" icon="approve-check">
+    Validates tax identification numbers for individuals and legal entities. Returns the issuing tax office code and formatted display form.
+  </Card>
+  <Card title="VAT-EU" icon="approve-check">
+    Validates intra-EU VAT numbers for Polish taxpayers (`PL` + NIP). Strips the country prefix and applies the NIP MOD-11 algorithm. Returns the NIP and formatted display form.
+  </Card>
+  <Card title="REGON" icon="approve-check">
+    Handles both 9-digit (individual) and 14-digit (legal entity with local unit) REGON numbers, including multi-stage checksum validation.
+  </Card>
+  <Card title="KRS" icon="approve-check">
+    Validates court register numbers with automatic zero-padding normalisation. Documents the offline vs. online verification limitation.
+  </Card>
+</CardGrid>
+
+### Banking
+
+<CardGrid stagger>
+  <Card title="NRB" icon="approve-check">
+    Validates Polish bank account numbers using the MOD-97 checksum. Accepts raw, spaced, and IBAN-prefixed formats. Returns sort code, bank code, and account number.
+  </Card>
+  <Card title="IBAN" icon="approve-check">
+    Validates Polish IBANs (`PL` + NRB). Requires the country prefix and applies MOD-97. Returns NRB, sort code, bank code, and account number.
+  </Card>
+</CardGrid>
+
+## At a glance
+
+```ts
+import { Numerik, Gender } from '@slashlab/numerik-js'
+
+// Simple boolean check
+Numerik.pesel().isValid('92060512186')   // true
+Numerik.nip().isValid('5260250274')      // true
+
+// Rich result with failure details
+const result = Numerik.pesel().validate('92060512185') // wrong checksum digit
+result.isFailed()                        // true
+result.getFirstFailure()?.reason         // ValidationFailureReason.InvalidChecksum
+
+// Parse to a value object
+const pesel = Numerik.pesel().parse('92060512186')
+pesel.getBirthDate()                     // Date — 1992-06-05
+pesel.getGender()                        // Gender.Female
+pesel.getAge()                           // calculated from today
+pesel.isAdult()                          // true
+```
+
+## Key properties
+
+- **Zero production dependencies** — core package has no runtime dependencies.
+- **Bundled types** — TypeScript types ship with the package; no `@types/` needed.
+- **ESM + CJS** — ships both formats; works in Node, Deno, Bun, and bundlers.
+- **Rich failure reasons** — `ValidationFailureReason` enum covers format, checksum, encoded-date, and semantic failures.
+- **Zod integration** — optional Zod schemas via the `/zod` sub-path export (requires `zod` peer dependency).
+- **Input length guard** — inputs over 32 characters are rejected immediately.

@@ -1,0 +1,99 @@
+---
+title: Numerik JS
+description: Biblioteka TypeScript do walidacji i parsowania polskich numerów identyfikacyjnych — PESEL, NIP, REGON, KRS, NRB, VAT-EU, IBAN, dowód osobisty i paszport.
+template: splash
+hero:
+  tagline: Walidacja i parsowanie polskich numerów identyfikacyjnych (PESEL, NIP, REGON, KRS, NRB, VAT-EU, IBAN). Zwraca czytelne obiekty danych i precyzyjnie wskazuje powody błędów.
+  actions:
+    - text: Pierwsze kroki
+      link: /pl/getting-started/
+      icon: right-arrow
+      variant: primary
+    - text: Zobacz na GitHub
+      link: https://github.com/sqrcz/numerik-js
+      icon: github
+      variant: minimal
+---
+
+import { Aside, Card, CardGrid } from '@astrojs/starlight/components';
+
+<Aside type="tip" title="Dostępne również dla PHP">
+  Szukasz wersji PHP? Sprawdź [slashlab/numerik](https://numerik.slashlab.pl) na Packagist.
+</Aside>
+
+## Przegląd
+
+`@slashlab/numerik-js` to biblioteka TypeScript bez zależności produkcyjnych. Walidacja informuje o tym *dlaczego* dane są nieprawidłowe, a nie tylko *że* są nieprawidłowe. Typy są dołączone do biblioteki — nie potrzebujesz paczki `@types/`.
+
+### Osobowe
+
+<CardGrid stagger>
+  <Card title="PESEL" icon="approve-check">
+    Waliduje i parsuje powszechny numer identyfikacyjny obywatela Polski. Wyodrębnia datę urodzenia, płeć, stulecie, wiek i numer porządkowy bezpośrednio z numeru.
+  </Card>
+  <Card title="Dowód osobisty" icon="approve-check">
+    Waliduje numery polskich dowodów osobistych. Trzyliterowa seria plus pięć cyfr, weryfikowana sumą kontrolną ICAO 9303.
+  </Card>
+  <Card title="Paszport" icon="approve-check">
+    Waliduje numery polskich paszportów. Dwuliterowa seria plus siedem cyfr, weryfikowana algorytmem ICAO 9303 stosowanym w dokumentach podróży na całym świecie.
+  </Card>
+</CardGrid>
+
+### Podatkowe i rejestrowe
+
+<CardGrid stagger>
+  <Card title="NIP" icon="approve-check">
+    Waliduje numery identyfikacji podatkowej osób fizycznych i prawnych. Zwraca kod urzędu skarbowego i sformatowaną postać wyświetlania.
+  </Card>
+  <Card title="VAT-EU" icon="approve-check">
+    Waliduje unijne numery VAT polskich podatników (`PL` + NIP). Usuwa prefiks kraju i stosuje algorytm MOD-11 dla NIP. Zwraca NIP i sformatowaną postać wyświetlania.
+  </Card>
+  <Card title="REGON" icon="approve-check">
+    Obsługuje zarówno 9-cyfrowe (indywidualne), jak i 14-cyfrowe (dla jednostek lokalnych osób prawnych) numery REGON, w tym wieloetapową walidację sumy kontrolnej.
+  </Card>
+  <Card title="KRS" icon="approve-check">
+    Waliduje numery Krajowego Rejestru Sądowego z automatycznym dopełnianiem zerami. Dokumentuje ograniczenie weryfikacji wyłącznie offline.
+  </Card>
+</CardGrid>
+
+### Bankowe
+
+<CardGrid stagger>
+  <Card title="NRB" icon="approve-check">
+    Waliduje polskie numery rachunków bankowych przy użyciu sumy kontrolnej MOD-97. Akceptuje zapis ciągły, z odstępami oraz z prefiksem IBAN. Zwraca kod sortowania, kod banku i numer rachunku.
+  </Card>
+  <Card title="IBAN" icon="approve-check">
+    Waliduje polskie numery IBAN (`PL` + NRB). Wymaga prefiksu kraju i stosuje MOD-97. Zwraca NRB, kod sortowania, kod banku i numer rachunku.
+  </Card>
+</CardGrid>
+
+## W skrócie
+
+```ts
+import { Numerik, Gender } from '@slashlab/numerik-js'
+
+// Sprawdzenie poprawności
+Numerik.pesel().isValid('92060512186')   // true
+Numerik.nip().isValid('5260250274')      // true
+
+// Szczegółowe wyniki z informacją o błędzie
+const result = Numerik.pesel().validate('92060512185') // błędna cyfra kontrolna
+result.isFailed()                        // true
+result.getFirstFailure()?.reason         // ValidationFailureReason.InvalidChecksum
+
+// Parsowanie do obiektu z danymi
+const pesel = Numerik.pesel().parse('92060512186')
+pesel.getBirthDate()                     // Date — 1992-06-05
+pesel.getGender()                        // Gender.Female
+pesel.getAge()                           // obliczane na bieżąco
+pesel.isAdult()                          // true
+```
+
+## Kluczowe właściwości
+
+- **Brak zależności produkcyjnych** — podstawowa biblioteka nie ma żadnych zewnętrznych zależności.
+- **Dołączone typy** — typy TypeScript są dołączone do biblioteki; nie potrzebujesz paczki `@types/`.
+- **ESM + CJS** — dostarcza oba formaty; działa w Node, Deno, Bun i bundlerach.
+- **Precyzyjne komunikaty błędów** — enum `ValidationFailureReason` obejmuje błędy formatu, sumy kontrolnej, zakodowanej daty i semantyczne.
+- **Integracja z Zod** — opcjonalne schematy Zod dostępne poprzez dodatkową ścieżkę importu `/zod` (wymaga zewnętrznej zależności `zod`).
+- **Ochrona przed zbyt długimi danymi wejściowymi** — dane wejściowe przekraczające 32 znaki są natychmiast odrzucane.
