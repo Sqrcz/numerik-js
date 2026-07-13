@@ -87,7 +87,7 @@ nrb.getAccountNumber()    // '0000000000000000'
 
 Uses the **MOD-97** algorithm from ISO 13616 (IBAN standard):
 
-1. Reject inputs longer than 32 characters. Strip spaces and an optional `PL` prefix.
+1. Reject inputs longer than 40 characters. Strip spaces and hyphens, and an optional `PL` prefix.
 2. Assert exactly 26 digits remain.
-3. Rearrange: move the first 4 digits to the end and prepend the numeric country code for Poland (`2521`), giving a 32-digit string.
-4. Compute the 32-digit string modulo 97. The result must equal `1`.
+3. Rearrange: move the first 2 digits (the check digits) to the end and insert the numeric country code for Poland (`2521`) between the remaining 24 digits and them, giving a 30-digit string.
+4. Compute the 30-digit string modulo 97. The result must equal `1`.

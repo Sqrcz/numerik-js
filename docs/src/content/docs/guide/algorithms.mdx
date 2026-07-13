@@ -107,6 +107,7 @@ Sum = 70 + 33 + 12 + 7 + 6 + 3 + 28 + 15 = **174**
 2. Reject non-digit characters; fail with `InvalidCharacters`.
 3. Assert the first 3 digits are not `000`; fail with `InvalidFormat`.
 4. Multiply each of the first 9 digits by its weight. Sum the products. Take `sum mod 11`. The result must equal digit 10; since a single digit can only be 0–9, a modulo result of `10` can never match and always fails with `InvalidChecksum`.
+5. In strict mode, reject inputs where all 10 digits are identical; fail with `AllSameDigit`.
 
 ### Worked example
 

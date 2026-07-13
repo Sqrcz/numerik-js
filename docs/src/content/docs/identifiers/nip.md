@@ -85,5 +85,6 @@ Weights: `6, 5, 7, 2, 3, 4, 5, 6, 7`
 1. Strip hyphens and spaces. Assert exactly 10 digits.
 2. Assert the first 3 digits are not `000`.
 3. Multiply each of the first 9 digits by its weight, sum, take `mod 11`. The result must equal digit 10; since a single digit can only be 0–9, a modulo result of `10` can never match and always fails with `InvalidChecksum`.
+4. In strict mode, reject inputs where all 10 digits are identical; fail with `AllSameDigit`.
 
 See [Algorithms](/guide/algorithms/) for the full reference.

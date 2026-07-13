@@ -107,6 +107,7 @@ Suma = 70 + 33 + 12 + 7 + 6 + 3 + 28 + 15 = **174**
 2. Odrzuć znaki niebędące cyframi — błąd `InvalidCharacters`.
 3. Pierwsze 3 cyfry nie mogą być `000` — inaczej błąd `InvalidFormat`.
 4. Pomnóż każdą z pierwszych 9 cyfr przez jej wagę i zsumuj iloczyny. Oblicz `suma mod 11`. Wynik musi być równy dziesiątej cyfrze. Uwaga: wynik równy `10` jest niemożliwy do zakodowania jako pojedyncza cyfra, więc każdy taki numer zawsze skutkuje błędem `InvalidChecksum`.
+5. W trybie ścisłym odrzuć dane wejściowe, w których wszystkie 10 cyfr jest identycznych; błąd `AllSameDigit`.
 
 ### Przykład obliczenia
 
