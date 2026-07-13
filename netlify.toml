@@ -1,6 +1,6 @@
 [build]
   base    = "docs"
-  command = "npm ci && npm run build"
+  command = "pnpm install --frozen-lockfile && pnpm run build"
   publish = "dist"
 
 [build.environment]
