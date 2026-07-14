@@ -11,54 +11,70 @@ const require = createRequire(import.meta.url)
 const validNip = '5260250274'
 
 async function checkEsmEntry() {
-  const { NipIdentifier } = await import('../dist/index.js')
+  const { NipIdentifier } = await import('@slashlab/numerik-js')
   assert.equal(
     typeof NipIdentifier,
     'function',
-    'dist/index.js: NipIdentifier did not resolve',
+    '@slashlab/numerik-js (import): NipIdentifier did not resolve',
   )
   const result = new NipIdentifier().validate(validNip)
   assert.equal(
     result.isValid,
     true,
-    'dist/index.js: NipIdentifier failed to validate a known-good NIP',
+    '@slashlab/numerik-js (import): NipIdentifier failed to validate a known-good NIP',
   )
 }
 
 function checkCjsEntry() {
-  const { NipIdentifier } = require('../dist/index.cjs')
+  const { NipIdentifier } = require('@slashlab/numerik-js')
   assert.equal(
     typeof NipIdentifier,
     'function',
-    'dist/index.cjs: NipIdentifier did not resolve',
+    '@slashlab/numerik-js (require): NipIdentifier did not resolve',
   )
   const result = new NipIdentifier().validate(validNip)
   assert.equal(
     result.isValid,
     true,
-    'dist/index.cjs: NipIdentifier failed to validate a known-good NIP',
+    '@slashlab/numerik-js (require): NipIdentifier failed to validate a known-good NIP',
   )
 }
 
-async function checkZodSubpath() {
-  const { nipSchema } = await import('../dist/zod/index.js')
+async function checkZodSubpathEsm() {
+  const { nipSchema } = await import('@slashlab/numerik-js/zod')
   assert.equal(
     typeof nipSchema,
     'function',
-    'dist/zod/index.js: nipSchema did not resolve',
+    '@slashlab/numerik-js/zod (import): nipSchema did not resolve',
   )
   const result = nipSchema().safeParse(validNip)
   assert.equal(
     result.success,
     true,
-    'dist/zod/index.js: nipSchema failed to validate a known-good NIP',
+    '@slashlab/numerik-js/zod (import): nipSchema failed to validate a known-good NIP',
+  )
+}
+
+function checkZodSubpathCjs() {
+  const { nipSchema } = require('@slashlab/numerik-js/zod')
+  assert.equal(
+    typeof nipSchema,
+    'function',
+    '@slashlab/numerik-js/zod (require): nipSchema did not resolve',
+  )
+  const result = nipSchema().safeParse(validNip)
+  assert.equal(
+    result.success,
+    true,
+    '@slashlab/numerik-js/zod (require): nipSchema failed to validate a known-good NIP',
   )
 }
 
 await checkEsmEntry()
 checkCjsEntry()
-await checkZodSubpath()
+await checkZodSubpathEsm()
+checkZodSubpathCjs()
 
 console.log(
-  'smoke test passed: dist/index.js, dist/index.cjs, dist/zod/index.js all resolve and execute',
+  'smoke test passed: @slashlab/numerik-js and @slashlab/numerik-js/zod resolve and execute via both import and require',
 )
