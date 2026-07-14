@@ -27,6 +27,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm check
       - run: pnpm build
+      - run: pnpm test:smoke
       - run: npm publish --access public --provenance
 
       - name: Create GitHub Release
