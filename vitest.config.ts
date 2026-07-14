@@ -7,5 +7,8 @@ export default defineConfig({
       reporter: ['text', 'html', 'clover'],
       reportsDirectory: 'coverage',
     },
+    typecheck: {
+      tsconfig: './tsconfig.test.json',
+    },
   },
 })
