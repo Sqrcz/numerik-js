@@ -53,6 +53,7 @@
   ],
   "scripts": {
     "build": "tsup",
+    "test:smoke": "node scripts/smoke-test.mjs",
     "test": "vitest run --passWithNoTests",
     "test:watch": "vitest",
     "test:cover": "vitest run --coverage",
