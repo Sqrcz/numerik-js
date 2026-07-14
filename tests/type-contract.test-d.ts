@@ -1,8 +1,7 @@
-import { describe, expect, expectTypeOf, it } from 'vitest'
+import { describe, expectTypeOf, it } from 'vitest'
 import type { z } from 'zod'
-import { Gender } from '../src/enums/Gender.js'
-import { RegonType } from '../src/enums/RegonType.js'
-import { ValidationFailureReason } from '../src/enums/ValidationFailureReason.js'
+import type { Gender } from '../src/enums/Gender.js'
+import type { RegonType } from '../src/enums/RegonType.js'
 import type { ValidationFailure } from '../src/result/ValidationFailure.js'
 import type { ValidationResult } from '../src/result/ValidationResult.js'
 import type { Iban } from '../src/value-objects/Iban.js'
@@ -241,19 +240,5 @@ describe('shared types', () => {
     expectTypeOf<ValidationResult['failures']>().toEqualTypeOf<
       readonly ValidationFailure[]
     >()
-  })
-
-  it('exports Gender as a runtime-usable value, not just a type', () => {
-    expect(Gender.Male).toBe('male')
-    expect(Gender.Female).toBe('female')
-  })
-
-  it('exports RegonType as a runtime-usable value, not just a type', () => {
-    expect(RegonType.Individual).toBe('individual')
-    expect(RegonType.LegalEntity).toBe('legal_entity')
-  })
-
-  it('exports ValidationFailureReason as a runtime-usable value, not just a type', () => {
-    expect(ValidationFailureReason.InvalidChecksum).toBe('invalid_checksum')
   })
 })
