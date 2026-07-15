@@ -62,13 +62,14 @@ describe('PeselIdentifier — validate()', () => {
       ['all same digit', '22222222222', ValidationFailureReason.AllSameDigit],
     ]
 
-    it.each(
-      invalidCases,
-    )('%s fails with correct reason', (_label, input, reason) => {
-      const result = pesel().validate(input)
-      expect(result.isFailed()).toBe(true)
-      expect(result.hasFailureReason(reason)).toBe(true)
-    })
+    it.each(invalidCases)(
+      '%s fails with correct reason',
+      (_label, input, reason) => {
+        const result = pesel().validate(input)
+        expect(result.isFailed()).toBe(true)
+        expect(result.hasFailureReason(reason)).toBe(true)
+      },
+    )
   })
 
   it('fails when input exceeds 32 characters', () => {

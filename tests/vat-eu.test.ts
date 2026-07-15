@@ -51,13 +51,14 @@ describe('VatEuIdentifier — validate()', () => {
       ['tax office 000', 'PL0001234567', ValidationFailureReason.InvalidFormat],
     ]
 
-    it.each(
-      invalidCases,
-    )('%s fails with correct reason', (_label, input, reason) => {
-      const result = vatEu().validate(input)
-      expect(result.isFailed()).toBe(true)
-      expect(result.hasFailureReason(reason)).toBe(true)
-    })
+    it.each(invalidCases)(
+      '%s fails with correct reason',
+      (_label, input, reason) => {
+        const result = vatEu().validate(input)
+        expect(result.isFailed()).toBe(true)
+        expect(result.hasFailureReason(reason)).toBe(true)
+      },
+    )
   })
 
   describe('strict mode — all same digit', () => {

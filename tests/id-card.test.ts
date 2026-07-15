@@ -51,13 +51,14 @@ describe('IdCardIdentifier — validate()', () => {
       ['wrong checksum', 'ABC123453', ValidationFailureReason.InvalidChecksum],
     ]
 
-    it.each(
-      invalidCases,
-    )('%s fails with correct reason', (_label, input, reason) => {
-      const result = idCard().validate(input)
-      expect(result.isFailed()).toBe(true)
-      expect(result.hasFailureReason(reason)).toBe(true)
-    })
+    it.each(invalidCases)(
+      '%s fails with correct reason',
+      (_label, input, reason) => {
+        const result = idCard().validate(input)
+        expect(result.isFailed()).toBe(true)
+        expect(result.hasFailureReason(reason)).toBe(true)
+      },
+    )
   })
 
   it('fails when input exceeds 32 characters', () => {
