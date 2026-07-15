@@ -59,13 +59,14 @@ describe('IbanIdentifier — validate()', () => {
       ],
     ]
 
-    it.each(
-      invalidCases,
-    )('%s fails with correct reason', (_label, input, reason) => {
-      const result = iban().validate(input)
-      expect(result.isFailed()).toBe(true)
-      expect(result.hasFailureReason(reason)).toBe(true)
-    })
+    it.each(invalidCases)(
+      '%s fails with correct reason',
+      (_label, input, reason) => {
+        const result = iban().validate(input)
+        expect(result.isFailed()).toBe(true)
+        expect(result.hasFailureReason(reason)).toBe(true)
+      },
+    )
   })
 
   it('fails when raw input exceeds 40 characters', () => {

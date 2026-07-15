@@ -41,13 +41,14 @@ describe('PassportIdentifier — validate()', () => {
       ['wrong checksum', 'AB1234563', ValidationFailureReason.InvalidChecksum],
     ]
 
-    it.each(
-      invalidCases,
-    )('%s fails with correct reason', (_label, input, reason) => {
-      const result = passport().validate(input)
-      expect(result.isFailed()).toBe(true)
-      expect(result.hasFailureReason(reason)).toBe(true)
-    })
+    it.each(invalidCases)(
+      '%s fails with correct reason',
+      (_label, input, reason) => {
+        const result = passport().validate(input)
+        expect(result.isFailed()).toBe(true)
+        expect(result.hasFailureReason(reason)).toBe(true)
+      },
+    )
   })
 
   it('fails when input exceeds 32 characters', () => {
