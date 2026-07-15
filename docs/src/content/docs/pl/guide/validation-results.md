@@ -3,7 +3,7 @@ title: Wyniki walidacji
 description: Zrozumienie klas ValidationResult i ValidationFailure zwracanych przez walidatory numerik-js.
 ---
 
-Metody `isValid()` i `validate()` są dostępne na każdej klasie identyfikatora i nigdy nie rzucają wyjątku.
+Metody `isValid()` i `validate()` są dostępne na każdej klasie identyfikatora i nigdy nie rzucają wyjątku. `parse()` rzuca wyjątek przy niepowodzeniu; `tryParse()` przechwytuje go i zwraca `null` — zobacz [Wyjątki](#wyjątki) poniżej.
 
 ## ValidationResult
 
@@ -11,19 +11,20 @@ Metody `isValid()` i `validate()` są dostępne na każdej klasie identyfikatora
 
 ### Właściwości
 
-| Właściwość | Typ | Opis |
-|-----------|-----|------|
-| `isValid` | `boolean` | `true` jeśli walidacja zakończyła się sukcesem. |
+| Właściwość | Typ                            | Opis                                                                               |
+| ---------- | ------------------------------ | ---------------------------------------------------------------------------------- |
+| `isValid`  | `boolean`                      | `true` jeśli walidacja zakończyła się sukcesem.                                    |
 | `failures` | `readonly ValidationFailure[]` | Pusta tablica przy poprawnym numerze; jeden lub więcej błędów przy nieprawidłowym. |
 
 ### Metody
 
-| Metoda | Typ zwracany | Opis |
-|--------|-------------|------|
-| `isFailed()` | `boolean` | Negacja `isValid`. |
-| `getFailures()` | `readonly ValidationFailure[]` | Zwraca tablicę błędów. |
-| `getFirstFailure()` | `ValidationFailure \| null` | Pierwszy błąd lub `null` przy poprawnym wejściu. |
-| `hasFailureReason(reason: ValidationFailureReason)` | `boolean` | `true` jeśli którykolwiek błąd pasuje do podanego powodu. |
+| Metoda                                              | Typ zwracany                   | Opis                                                                                                                                              |
+| --------------------------------------------------- | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `isFailed()`                                        | `boolean`                      | Negacja `isValid`.                                                                                                                                |
+| `getFailures()`                                     | `readonly ValidationFailure[]` | Zwraca tablicę błędów.                                                                                                                            |
+| `getFirstFailure()`                                 | `ValidationFailure \| null`    | Pierwszy błąd lub `null` przy poprawnym wejściu.                                                                                                  |
+| `hasFailureReason(reason: ValidationFailureReason)` | `boolean`                      | `true` jeśli którykolwiek błąd pasuje do podanego powodu.                                                                                         |
+| `toException()`                                     | `ValidationException`          | Buduje wyjątek odpowiadający powodowi pierwszego błędu — wywołuj tylko po sprawdzeniu, że `isFailed()` zwraca `true`. Zobacz [Wyjątki](#wyjątki). |
 
 ### Przykłady
 
@@ -60,10 +61,10 @@ Każdy element w `failures` to instancja `ValidationFailure`.
 
 ### Właściwości
 
-| Właściwość | Typ | Opis |
-|-----------|-----|------|
-| `reason` | `ValidationFailureReason` | Wartość enum identyfikująca kategorię błędu. |
-| `message` | `string` | Opis błędu przeznaczony do logowania i debugowania. |
+| Właściwość | Typ                       | Opis                                                |
+| ---------- | ------------------------- | --------------------------------------------------- |
+| `reason`   | `ValidationFailureReason` | Wartość enum identyfikująca kategorię błędu.        |
+| `message`  | `string`                  | Opis błędu przeznaczony do logowania i debugowania. |
 
 ## Enum ValidationFailureReason
 
@@ -71,32 +72,79 @@ Każdy element w `failures` to instancja `ValidationFailure`.
 
 ### Błędy formatu
 
-| Przypadek | Wartość | Opis |
-|-----------|---------|------|
-| `InvalidLength` | `invalid_length` | Numer ma nieprawidłową liczbę cyfr. |
-| `InvalidCharacters` | `invalid_characters` | Po usunięciu dozwolonych separatorów pozostały niedozwolone znaki. |
-| `InvalidFormat` | `invalid_format` | Długość i znaki są poprawne, ale numer narusza regułę strukturalną (np. kod urzędu skarbowego NIP `000`). |
+| Przypadek           | Wartość              | Opis                                                                                                      |
+| ------------------- | -------------------- | --------------------------------------------------------------------------------------------------------- |
+| `InvalidLength`     | `invalid_length`     | Numer ma nieprawidłową liczbę cyfr.                                                                       |
+| `InvalidCharacters` | `invalid_characters` | Po usunięciu dozwolonych separatorów pozostały niedozwolone znaki.                                        |
+| `InvalidFormat`     | `invalid_format`     | Długość i znaki są poprawne, ale numer narusza regułę strukturalną (np. kod urzędu skarbowego NIP `000`). |
 
 ### Błędy sumy kontrolnej
 
-| Przypadek | Wartość | Opis |
-|-----------|---------|------|
+| Przypadek         | Wartość            | Opis                                                       |
+| ----------------- | ------------------ | ---------------------------------------------------------- |
 | `InvalidChecksum` | `invalid_checksum` | Obliczona suma kontrolna nie zgadza się z cyfrą kontrolną. |
 
 ### Błędy zakodowanej daty
 
-| Przypadek | Wartość | Opis |
-|-----------|---------|------|
-| `InvalidDate` | `invalid_date` | Data zakodowana w identyfikatorze nie istnieje w kalendarzu. |
-| `FutureDate` | `future_date` | Zakodowana data urodzenia jest w przyszłości. |
+| Przypadek      | Wartość         | Opis                                                                   |
+| -------------- | --------------- | ---------------------------------------------------------------------- |
+| `InvalidDate`  | `invalid_date`  | Data zakodowana w identyfikatorze nie istnieje w kalendarzu.           |
+| `FutureDate`   | `future_date`   | Zakodowana data urodzenia jest w przyszłości.                          |
 | `InvalidMonth` | `invalid_month` | Kodowanie miesiąca nie odpowiada żadnemu ze znanych zakresów stulecia. |
 
 ### Błędy semantyczne
 
-| Przypadek | Wartość | Opis |
-|-----------|---------|------|
-| `AllZeros` | `all_zeros` | Wszystkie cyfry są zerami — strukturalnie możliwe, ale semantycznie nieprawidłowe. |
-| `AllSameDigit` | `all_same_digit` | Wszystkie cyfry są takie same i niezerowe. |
+| Przypadek      | Wartość          | Opis                                                                               |
+| -------------- | ---------------- | ---------------------------------------------------------------------------------- |
+| `AllZeros`     | `all_zeros`      | Wszystkie cyfry są zerami — strukturalnie możliwe, ale semantycznie nieprawidłowe. |
+| `AllSameDigit` | `all_same_digit` | Wszystkie cyfry są takie same i niezerowe.                                         |
+
+## Wyjątki
+
+`validate()` i `isValid()` nigdy nie rzucają wyjątku — zwracają `ValidationResult`. `parse()` rzuca wyjątek, gdy walidacja się nie powiedzie; `tryParse()` przechwytuje go i zwraca `null`.
+
+Rzucany wyjątek odpowiada powodowi pierwszego błędu:
+
+| Powód błędu                                 | Wyjątek                    |
+| ------------------------------------------- | -------------------------- |
+| `InvalidChecksum`                           | `InvalidChecksumException` |
+| `InvalidDate`, `FutureDate`, `InvalidMonth` | `InvalidDateException`     |
+| pozostałe                                   | `InvalidFormatException`   |
+
+Wszystkie trzy dziedziczą po `ValidationException`, więc przechwycenie klasy bazowej nadal działa, jeśli nie potrzebujesz rozróżniać rodzajów błędów. Każdy wyjątek zawiera pełny `ValidationResult` we właściwości `.result`.
+
+```ts
+import {
+  Numerik,
+  ValidationException,
+  InvalidChecksumException,
+  InvalidDateException,
+  InvalidFormatException,
+} from '@slashlab/numerik-js'
+
+try {
+  Numerik.pesel().parse('4405140145') // nieprawidłowa długość
+} catch (err) {
+  if (err instanceof InvalidChecksumException) {
+    // konkretna obsługa
+  } else if (err instanceof InvalidDateException) {
+    // konkretna obsługa
+  } else if (err instanceof ValidationException) {
+    // tu trafia InvalidFormatException, podobnie jak każda przyszła podklasa
+    err.result.getFirstFailure()?.reason // ValidationFailureReason.InvalidLength
+  }
+}
+```
+
+Wyjątek można też zbudować bezpośrednio z `ValidationResult`, bez wywoływania `parse()`:
+
+```ts
+const result = Numerik.pesel().validate('92060512185')
+
+if (result.isFailed()) {
+  throw result.toException() // InvalidChecksumException
+}
+```
 
 ## Pomocnicze konstruktory
 

@@ -77,7 +77,7 @@ export class NipIdentifier implements ValidatorInterface, ParserInterface {
     const result = this.validate(input)
 
     if (result.isFailed()) {
-      throw new ValidationException(result)
+      throw result.toException()
     }
 
     return new Nip(input, this.normalize(input))

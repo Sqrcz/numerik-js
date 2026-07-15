@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { ValidationFailureReason } from '../src/enums/ValidationFailureReason.js'
-import { ValidationException } from '../src/exceptions/ValidationException.js'
+import { InvalidChecksumException } from '../src/exceptions/InvalidChecksumException.js'
+import { InvalidFormatException } from '../src/exceptions/InvalidFormatException.js'
 import { PassportIdentifier } from '../src/identifiers/PassportIdentifier.js'
 import { Passport } from '../src/value-objects/Passport.js'
 
@@ -123,20 +124,26 @@ describe('PassportIdentifier — parse()', () => {
   })
 
   describe('exceptions', () => {
-    it('throws ValidationException for wrong length', () => {
-      expect(() => passport().parse('AB123456')).toThrow(ValidationException)
+    it('throws InvalidFormatException for wrong length', () => {
+      expect(() => passport().parse('AB123456')).toThrow(InvalidFormatException)
     })
 
-    it('throws ValidationException for digit in series', () => {
-      expect(() => passport().parse('1B1234564')).toThrow(ValidationException)
+    it('throws InvalidFormatException for digit in series', () => {
+      expect(() => passport().parse('1B1234564')).toThrow(
+        InvalidFormatException,
+      )
     })
 
-    it('throws ValidationException for letter in number', () => {
-      expect(() => passport().parse('AB123456A')).toThrow(ValidationException)
+    it('throws InvalidFormatException for letter in number', () => {
+      expect(() => passport().parse('AB123456A')).toThrow(
+        InvalidFormatException,
+      )
     })
 
-    it('throws ValidationException for wrong checksum', () => {
-      expect(() => passport().parse('AB1234563')).toThrow(ValidationException)
+    it('throws InvalidChecksumException for wrong checksum', () => {
+      expect(() => passport().parse('AB1234563')).toThrow(
+        InvalidChecksumException,
+      )
     })
   })
 })

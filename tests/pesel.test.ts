@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import { Gender } from '../src/enums/Gender.js'
 import { ValidationFailureReason } from '../src/enums/ValidationFailureReason.js'
-import { ValidationException } from '../src/exceptions/ValidationException.js'
+import { InvalidChecksumException } from '../src/exceptions/InvalidChecksumException.js'
+import { InvalidDateException } from '../src/exceptions/InvalidDateException.js'
+import { InvalidFormatException } from '../src/exceptions/InvalidFormatException.js'
 import { PeselIdentifier } from '../src/identifiers/PeselIdentifier.js'
 import { Pesel } from '../src/value-objects/Pesel.js'
 
@@ -316,29 +318,29 @@ describe('PeselIdentifier — parse()', () => {
 })
 
 describe('PeselIdentifier — parse() exceptions', () => {
-  it('throws ValidationException for wrong length', () => {
-    expect(() => pesel().parse('4405140145')).toThrow(ValidationException)
+  it('throws InvalidFormatException for wrong length', () => {
+    expect(() => pesel().parse('4405140145')).toThrow(InvalidFormatException)
   })
 
-  it('throws ValidationException for invalid characters', () => {
-    expect(() => pesel().parse('4405140145A')).toThrow(ValidationException)
+  it('throws InvalidFormatException for invalid characters', () => {
+    expect(() => pesel().parse('4405140145A')).toThrow(InvalidFormatException)
   })
 
-  it('throws ValidationException for invalid checksum', () => {
-    expect(() => pesel().parse('44051401459')).toThrow(ValidationException)
+  it('throws InvalidChecksumException for invalid checksum', () => {
+    expect(() => pesel().parse('44051401459')).toThrow(InvalidChecksumException)
   })
 
-  it('throws ValidationException for invalid date (Feb 31)', () => {
-    expect(() => pesel().parse('44023101452')).toThrow(ValidationException)
+  it('throws InvalidDateException for invalid date (Feb 31)', () => {
+    expect(() => pesel().parse('44023101452')).toThrow(InvalidDateException)
   })
 
-  it('throws ValidationException for invalid month encoding', () => {
-    expect(() => pesel().parse('44001401453')).toThrow(ValidationException)
+  it('throws InvalidDateException for invalid month encoding', () => {
+    expect(() => pesel().parse('44001401453')).toThrow(InvalidDateException)
   })
 
-  it('throws ValidationException for future date in strict mode', () => {
+  it('throws InvalidDateException for future date in strict mode', () => {
     expect(() => peselStrict(true).parse('00652001248')).toThrow(
-      ValidationException,
+      InvalidDateException,
     )
   })
 

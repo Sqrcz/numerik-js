@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { ValidationFailureReason } from '../src/enums/ValidationFailureReason.js'
-import { ValidationException } from '../src/exceptions/ValidationException.js'
+import { InvalidChecksumException } from '../src/exceptions/InvalidChecksumException.js'
+import { InvalidFormatException } from '../src/exceptions/InvalidFormatException.js'
 import { NipIdentifier } from '../src/identifiers/NipIdentifier.js'
 import { Nip } from '../src/value-objects/Nip.js'
 
@@ -139,20 +140,20 @@ describe('NipIdentifier — parse()', () => {
   })
 
   describe('exceptions', () => {
-    it('throws ValidationException for wrong length', () => {
-      expect(() => nip().parse('526025027')).toThrow(ValidationException)
+    it('throws InvalidFormatException for wrong length', () => {
+      expect(() => nip().parse('526025027')).toThrow(InvalidFormatException)
     })
 
-    it('throws ValidationException for invalid characters', () => {
-      expect(() => nip().parse('526ABC0274')).toThrow(ValidationException)
+    it('throws InvalidFormatException for invalid characters', () => {
+      expect(() => nip().parse('526ABC0274')).toThrow(InvalidFormatException)
     })
 
-    it('throws ValidationException for 000 tax office code', () => {
-      expect(() => nip().parse('0001234567')).toThrow(ValidationException)
+    it('throws InvalidFormatException for 000 tax office code', () => {
+      expect(() => nip().parse('0001234567')).toThrow(InvalidFormatException)
     })
 
-    it('throws ValidationException for wrong checksum', () => {
-      expect(() => nip().parse('5260250275')).toThrow(ValidationException)
+    it('throws InvalidChecksumException for wrong checksum', () => {
+      expect(() => nip().parse('5260250275')).toThrow(InvalidChecksumException)
     })
   })
 })
