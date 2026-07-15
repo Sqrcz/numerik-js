@@ -74,7 +74,7 @@ export class IdCardIdentifier implements ValidatorInterface, ParserInterface {
     const result = this.validate(input)
 
     if (result.isFailed()) {
-      throw new ValidationException(result)
+      throw result.toException()
     }
 
     return new IdCard(input, this.normalize(input))

@@ -107,7 +107,7 @@ export class PeselIdentifier implements ValidatorInterface, ParserInterface {
     const result = this.validate(input)
 
     if (result.isFailed()) {
-      throw new ValidationException(result)
+      throw result.toException()
     }
 
     const normalized = this.normalize(input)

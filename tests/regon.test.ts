@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import { RegonType } from '../src/enums/RegonType.js'
 import { ValidationFailureReason } from '../src/enums/ValidationFailureReason.js'
-import { ValidationException } from '../src/exceptions/ValidationException.js'
+import { InvalidChecksumException } from '../src/exceptions/InvalidChecksumException.js'
+import { InvalidFormatException } from '../src/exceptions/InvalidFormatException.js'
 import { RegonIdentifier } from '../src/identifiers/RegonIdentifier.js'
 import { Regon } from '../src/value-objects/Regon.js'
 
@@ -167,16 +168,16 @@ describe('RegonIdentifier — parse()', () => {
   })
 
   describe('exceptions', () => {
-    it('throws ValidationException for wrong length', () => {
-      expect(() => regon().parse('85051845')).toThrow(ValidationException)
+    it('throws InvalidFormatException for wrong length', () => {
+      expect(() => regon().parse('85051845')).toThrow(InvalidFormatException)
     })
 
-    it('throws ValidationException for invalid characters', () => {
-      expect(() => regon().parse('85051845A')).toThrow(ValidationException)
+    it('throws InvalidFormatException for invalid characters', () => {
+      expect(() => regon().parse('85051845A')).toThrow(InvalidFormatException)
     })
 
-    it('throws ValidationException for wrong checksum', () => {
-      expect(() => regon().parse('850518456')).toThrow(ValidationException)
+    it('throws InvalidChecksumException for wrong checksum', () => {
+      expect(() => regon().parse('850518456')).toThrow(InvalidChecksumException)
     })
   })
 })

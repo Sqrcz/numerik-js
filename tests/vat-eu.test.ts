@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { ValidationFailureReason } from '../src/enums/ValidationFailureReason.js'
-import { ValidationException } from '../src/exceptions/ValidationException.js'
+import { InvalidChecksumException } from '../src/exceptions/InvalidChecksumException.js'
+import { InvalidFormatException } from '../src/exceptions/InvalidFormatException.js'
 import { VatEuIdentifier } from '../src/identifiers/VatEuIdentifier.js'
 import { VatEu } from '../src/value-objects/VatEu.js'
 
@@ -151,16 +152,18 @@ describe('VatEuIdentifier — parse()', () => {
   })
 
   describe('exceptions', () => {
-    it('throws ValidationException for missing prefix', () => {
-      expect(() => vatEu().parse('5260250274')).toThrow(ValidationException)
+    it('throws InvalidFormatException for missing prefix', () => {
+      expect(() => vatEu().parse('5260250274')).toThrow(InvalidFormatException)
     })
 
-    it('throws ValidationException for wrong length', () => {
-      expect(() => vatEu().parse('PL526025027')).toThrow(ValidationException)
+    it('throws InvalidFormatException for wrong length', () => {
+      expect(() => vatEu().parse('PL526025027')).toThrow(InvalidFormatException)
     })
 
-    it('throws ValidationException for wrong checksum', () => {
-      expect(() => vatEu().parse('PL5260250275')).toThrow(ValidationException)
+    it('throws InvalidChecksumException for wrong checksum', () => {
+      expect(() => vatEu().parse('PL5260250275')).toThrow(
+        InvalidChecksumException,
+      )
     })
   })
 })

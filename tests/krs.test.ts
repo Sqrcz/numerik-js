@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { ValidationFailureReason } from '../src/enums/ValidationFailureReason.js'
-import { ValidationException } from '../src/exceptions/ValidationException.js'
+import { InvalidFormatException } from '../src/exceptions/InvalidFormatException.js'
 import { KrsIdentifier } from '../src/identifiers/KrsIdentifier.js'
 import { Krs } from '../src/value-objects/Krs.js'
 
@@ -133,16 +133,16 @@ describe('KrsIdentifier — parse()', () => {
   })
 
   describe('exceptions', () => {
-    it('throws ValidationException for all zeros', () => {
-      expect(() => krs().parse('0000000000')).toThrow(ValidationException)
+    it('throws InvalidFormatException for all zeros', () => {
+      expect(() => krs().parse('0000000000')).toThrow(InvalidFormatException)
     })
 
-    it('throws ValidationException for invalid characters', () => {
-      expect(() => krs().parse('KRS1234567')).toThrow(ValidationException)
+    it('throws InvalidFormatException for invalid characters', () => {
+      expect(() => krs().parse('KRS1234567')).toThrow(InvalidFormatException)
     })
 
-    it('throws ValidationException for too long', () => {
-      expect(() => krs().parse('00001272060')).toThrow(ValidationException)
+    it('throws InvalidFormatException for too long', () => {
+      expect(() => krs().parse('00001272060')).toThrow(InvalidFormatException)
     })
   })
 })

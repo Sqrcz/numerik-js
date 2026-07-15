@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { ValidationFailureReason } from '../src/enums/ValidationFailureReason.js'
-import { ValidationException } from '../src/exceptions/ValidationException.js'
+import { InvalidChecksumException } from '../src/exceptions/InvalidChecksumException.js'
+import { InvalidFormatException } from '../src/exceptions/InvalidFormatException.js'
 import { IdCardIdentifier } from '../src/identifiers/IdCardIdentifier.js'
 import { IdCard } from '../src/value-objects/IdCard.js'
 
@@ -133,20 +134,22 @@ describe('IdCardIdentifier — parse()', () => {
   })
 
   describe('exceptions', () => {
-    it('throws ValidationException for wrong length', () => {
-      expect(() => idCard().parse('ABC12345')).toThrow(ValidationException)
+    it('throws InvalidFormatException for wrong length', () => {
+      expect(() => idCard().parse('ABC12345')).toThrow(InvalidFormatException)
     })
 
-    it('throws ValidationException for letter O in series', () => {
-      expect(() => idCard().parse('OBC123456')).toThrow(ValidationException)
+    it('throws InvalidFormatException for letter O in series', () => {
+      expect(() => idCard().parse('OBC123456')).toThrow(InvalidFormatException)
     })
 
-    it('throws ValidationException for digit in series', () => {
-      expect(() => idCard().parse('1BC123456')).toThrow(ValidationException)
+    it('throws InvalidFormatException for digit in series', () => {
+      expect(() => idCard().parse('1BC123456')).toThrow(InvalidFormatException)
     })
 
-    it('throws ValidationException for wrong checksum', () => {
-      expect(() => idCard().parse('ABC123453')).toThrow(ValidationException)
+    it('throws InvalidChecksumException for wrong checksum', () => {
+      expect(() => idCard().parse('ABC123453')).toThrow(
+        InvalidChecksumException,
+      )
     })
   })
 })

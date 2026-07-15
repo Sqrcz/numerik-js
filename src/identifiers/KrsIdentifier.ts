@@ -66,7 +66,7 @@ export class KrsIdentifier implements ValidatorInterface, ParserInterface {
     const result = this.validate(input)
 
     if (result.isFailed()) {
-      throw new ValidationException(result)
+      throw result.toException()
     }
 
     return new Krs(input, this.normalize(input))

@@ -65,7 +65,7 @@ export class PassportIdentifier implements ValidatorInterface, ParserInterface {
     const result = this.validate(input)
 
     if (result.isFailed()) {
-      throw new ValidationException(result)
+      throw result.toException()
     }
 
     return new Passport(input, this.normalize(input))

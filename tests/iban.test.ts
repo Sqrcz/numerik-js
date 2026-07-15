@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { ValidationFailureReason } from '../src/enums/ValidationFailureReason.js'
-import { ValidationException } from '../src/exceptions/ValidationException.js'
+import { InvalidChecksumException } from '../src/exceptions/InvalidChecksumException.js'
+import { InvalidFormatException } from '../src/exceptions/InvalidFormatException.js'
 import { IbanIdentifier } from '../src/identifiers/IbanIdentifier.js'
 import { Iban } from '../src/value-objects/Iban.js'
 
@@ -178,21 +179,21 @@ describe('IbanIdentifier — parse()', () => {
   })
 
   describe('exceptions', () => {
-    it('throws ValidationException for missing prefix', () => {
+    it('throws InvalidFormatException for missing prefix', () => {
       expect(() => iban().parse('61102010260000000000000000')).toThrow(
-        ValidationException,
+        InvalidFormatException,
       )
     })
 
-    it('throws ValidationException for wrong checksum', () => {
+    it('throws InvalidChecksumException for wrong checksum', () => {
       expect(() => iban().parse('PL62102010260000000000000000')).toThrow(
-        ValidationException,
+        InvalidChecksumException,
       )
     })
 
-    it('throws ValidationException for too short', () => {
+    it('throws InvalidFormatException for too short', () => {
       expect(() => iban().parse('PL6110201026000000000000000')).toThrow(
-        ValidationException,
+        InvalidFormatException,
       )
     })
   })

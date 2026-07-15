@@ -2,6 +2,10 @@ import { describe, expectTypeOf, it } from 'vitest'
 import type { z } from 'zod'
 import type { Gender } from '../src/enums/Gender.js'
 import type { RegonType } from '../src/enums/RegonType.js'
+import type { InvalidChecksumException } from '../src/exceptions/InvalidChecksumException.js'
+import type { InvalidDateException } from '../src/exceptions/InvalidDateException.js'
+import type { InvalidFormatException } from '../src/exceptions/InvalidFormatException.js'
+import type { ValidationException } from '../src/exceptions/ValidationException.js'
 import type { ValidationFailure } from '../src/result/ValidationFailure.js'
 import type { ValidationResult } from '../src/result/ValidationResult.js'
 import type { Iban } from '../src/value-objects/Iban.js'
@@ -240,5 +244,17 @@ describe('shared types', () => {
     expectTypeOf<ValidationResult['failures']>().toEqualTypeOf<
       readonly ValidationFailure[]
     >()
+  })
+
+  it('pins ValidationResult.toException() to return a ValidationException', () => {
+    expectTypeOf<
+      ValidationResult['toException']
+    >().returns.toEqualTypeOf<ValidationException>()
+  })
+
+  it('pins the exception hierarchy — each subclass extends ValidationException', () => {
+    expectTypeOf<InvalidChecksumException>().toExtend<ValidationException>()
+    expectTypeOf<InvalidDateException>().toExtend<ValidationException>()
+    expectTypeOf<InvalidFormatException>().toExtend<ValidationException>()
   })
 })
