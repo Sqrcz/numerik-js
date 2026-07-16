@@ -46,11 +46,11 @@ parsed?.getFormatted()  // '526-025-02-74'
 
 ## Strict mode
 
-All identifiers accept an optional `strict` flag (default: `true`). In non-strict mode formatting variations (spaces, dashes) are accepted:
+All identifiers accept an optional `strict` flag (default: `true`), and it never affects how input is normalized — normalization (stripping spaces, and dashes where the format allows them) is the same in both modes. What `strict` gates is extra semantic plausibility checks: rejecting all-same-digit numbers (PESEL, NIP, KRS, VAT-EU) and future birth dates (PESEL). ID Card, Passport, REGON, NRB, and IBAN have no additional strict-mode checks.
 
 ```ts
-Numerik.nip(false).isValid('526 025 02 74')  // true
-Numerik.nip(true).isValid('526 025 02 74')   // false
+Numerik.nip(false).isValid('1111111111')  // true
+Numerik.nip(true).isValid('1111111111')   // false — all-same-digit
 ```
 
 ## Zod integration
