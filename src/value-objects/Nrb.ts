@@ -29,7 +29,7 @@ export class Nrb implements IdentifierInterface {
   }
 
   getFormattedIban(): string {
-    const full = `PL${this.normalized}`
+    const full = this.getIban()
     return full.match(/.{1,4}/g)?.join(' ') ?? full
   }
 

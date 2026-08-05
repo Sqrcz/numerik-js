@@ -28,6 +28,6 @@ export class VatEu implements IdentifierInterface {
 
   getFormatted(): string {
     const n = this.getNip()
-    return `PL${n.slice(0, 3)}-${n.slice(3, 6)}-${n.slice(6, 8)}-${n.slice(8, 10)}`
+    return `${this.getCountryCode()}${n.slice(0, 3)}-${n.slice(3, 6)}-${n.slice(6, 8)}-${n.slice(8, 10)}`
   }
 }
