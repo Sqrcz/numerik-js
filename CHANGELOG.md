@@ -2,10 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [1.0.1] - 2026-08-13
+
+### Fixed
+
+- `VatEu.getFormatted()` and `Nrb.getFormattedIban()` derived their `PL` prefix independently instead of reusing `getCountryCode()`/`getIban()`; no observable output change, but the duplicated literals could silently drift apart.
 
 ## [1.0.0] - 2026-07-15
 
@@ -48,3 +54,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Zod integration at `@slashlab/numerik-js/zod` — `{identifier}Schema(strict?)` for validate-only and `{identifier}ParseSchema(strict?)` for parsing to typed value objects, for all 9 identifiers
 - Dual ESM + CJS output with full TypeScript declaration files
 - CI on Node 22 and 24; automated publish to npm on `v*` tags via OIDC Trusted Publishing (no token required)
+
+---
+
+[Unreleased]: https://github.com/sqrcz/numerik-js/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/sqrcz/numerik-js/compare/v1.0.0...v1.0.1
+[1.0.0]: https://github.com/sqrcz/numerik-js/releases/tag/v1.0.0
