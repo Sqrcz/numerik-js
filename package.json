@@ -1,6 +1,6 @@
 {
   "name": "@slashlab/numerik-js",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Validate and parse Polish identification numbers: PESEL, NIP, REGON, KRS, NRB, IBAN, VAT-EU, ID card, and passport",
   "author": {
     "name": "Sqrcz",
