@@ -1,7 +1,6 @@
 import mdx from '@astrojs/mdx'
 import starlight from '@astrojs/starlight'
 import { defineConfig } from 'astro/config'
-import remarkGfm from 'remark-gfm'
 import starlightLlmsTxt from 'starlight-llms-txt'
 import starlightThemeFlexoki from 'starlight-theme-flexoki'
 import starlightUiTweaks from 'starlight-ui-tweaks'
@@ -151,8 +150,6 @@ export default defineConfig({
         starlightThemeFlexoki({ accentColor: 'cyan' }),
       ],
     }),
-    mdx({
-      remarkPlugins: [remarkGfm],
-    }),
+    mdx(),
   ],
 })
