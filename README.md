@@ -1,3 +1,5 @@
+[🇬🇧 English](README.md) | [🇵🇱 Polski](README.pl.md)
+
 # numerik-js
 
 [![License](https://img.shields.io/github/license/sqrcz/numerik-js.svg)](LICENSE)
