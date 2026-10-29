@@ -96,16 +96,17 @@
     "overrides": {
       "esbuild": ">=0.28.1 <0.29.0",
       "nanoid": ">=3.3.18 <4.0.0",
-      "postcss": ">=8.5.23 <9.0.0"
+      "postcss": ">=8.5.23 <9.0.0",
+      "source-map-js": ">=1.2.2 <2.0.0"
     }
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.5.4",
-    "@vitest/coverage-v8": "^4.1.10",
-    "tsup": "^8.5.1",
+    "@biomejs/biome": "^2.6.4",
+    "@vitest/coverage-v8": "^5.0.5",
+    "tsup": "^9.0.0",
     "typescript": "^6.0.3",
-    "vite": ">=8.0.16 <9.0.0",
-    "vitest": "^4.1.10",
-    "zod": "^4.4.3"
+    "vite": "^8.3.5",
+    "vitest": "^5.0.5",
+    "zod": "^4.6.7"
   }
 }
